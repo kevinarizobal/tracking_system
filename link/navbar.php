@@ -3,7 +3,7 @@
   <div class="container-fluid text-dark p-2 d-flex align-items-center justify-content-between">
     <a class="navbar-brand text-dark d-flex align-items-center" href="#">
       <img src="image/2.png" class="img-fluid shadow-1" style="max-height: 50px;" alt="Logo">
-      <h3 class="ms-2 mb-0 text-white" style="font-size: 1.5rem;">NEMSU CANTILAN SUPPLY TRACKING SYSTEM</h3>
+      <h3 class="ms-2 mb-0 text-white" style="font-size: 1.5rem;">NEMSU CANTILAN SUPTRACK</h3>
     </a>
     <form class="d-flex">
        <a href="logout.php" class="btn btn-outline-light">Logout</a>
