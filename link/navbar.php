@@ -51,7 +51,7 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="#"><i class="bi bi-person-add"></i>&nbsp;Manage User</a>
+                        <a class="nav-link text-white" href="user.php"><i class="bi bi-person-add"></i>&nbsp;Manage User</a>
                     </li>
                 </ul>
             </div>
