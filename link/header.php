@@ -7,3 +7,38 @@
     <link rel="stylesheet" href="style.css">
     <title>NEMSU-SUPTRACK</title>
 </head>
+<style>
+    *{
+        font-family: 'Poppins', sans-serif;
+    }
+    .h-font{
+        font-family: 'Merienda', cursive;
+    }
+    /* Chrome, Safari, Edge, Opera */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    /* Firefox */
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
+    .availability-form{
+        margin-top: -50px;
+        z-index: 2;
+        position: relative;
+    }
+    @media screen and (max-width: 575px){
+        .availability-form{
+            margin-top: 25px;
+            padding: 0 35px;
+        }
+    }
+
+    #dashboard-menu{
+        position: fixed;
+        height: 100%;
+    }
+</style>
