@@ -43,7 +43,20 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="#"><i class="bi bi-qr-code-scan"></i>&nbsp;QR Code Stamp</a>
+                        <button class="btn text-white px-3 w-100 shadow-none text-start d-flex align-items-center justify-content-between" type="button" data-bs-toggle="collapse" data-bs-target="#transactionLinks">
+                            <span><i class="bi bi-qr-code-scan"></i>&nbsp;QR Code</span>
+                            <span><i class="bi bi-caret-down-fill"></i></span>
+                        </button>
+                        <div class="collapse show px-3 small mb-1" id="transactionLinks">
+                            <ul class="nav nav-pills flex-column rounded border border-light">
+                                <li class="nav-item">
+                                    <a class="nav-link text-white" href="qrcode.php"><i class="bi bi-postage"></i>&nbsp;Generate Stamps</a> 
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-white" href="#"><i class="bi bi-upc-scan"></i>&nbsp;Scan Stamps</a> 
+                                </li>
+                            </ul>
+                        </div>
                     </li>
 
                     <li class="nav-item">

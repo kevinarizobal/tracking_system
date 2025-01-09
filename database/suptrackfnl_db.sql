@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jan 08, 2025 at 03:42 AM
+-- Generation Time: Jan 09, 2025 at 09:35 AM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 7.3.33
 
@@ -114,6 +114,34 @@ INSERT INTO `property_tb` (`PROPERTYID`, `PropertyNo`, `Description`, `Quantity`
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `qr_tb`
+--
+
+CREATE TABLE `qr_tb` (
+  `id` int(11) NOT NULL,
+  `serial_id` varchar(50) DEFAULT NULL,
+  `property_id` varchar(50) DEFAULT NULL,
+  `article` text DEFAULT NULL,
+  `office` text DEFAULT NULL,
+  `service_status` text DEFAULT NULL,
+  `unit` text DEFAULT NULL,
+  `cost` text DEFAULT NULL,
+  `date_acquired` varchar(20) DEFAULT NULL,
+  `date_counted` varchar(20) DEFAULT NULL,
+  `coa_rep` text DEFAULT NULL,
+  `property_cus` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `qr_tb`
+--
+
+INSERT INTO `qr_tb` (`id`, `serial_id`, `property_id`, `article`, `office`, `service_status`, `unit`, `cost`, `date_acquired`, `date_counted`, `coa_rep`, `property_cus`) VALUES
+(3, 'SN-566', 'PN-579', 'Sample Item 2', 'Department of Computer Studies Laboratory', 'Serviceable', '200 pcs', '550000', '2025-01-09', '2025-01-23', 'Juancho Intano', 'Ernesto Gonzales');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `user_tb`
 --
 
@@ -170,6 +198,12 @@ ALTER TABLE `property_tb`
   ADD KEY `PARRNo` (`PARRNo`);
 
 --
+-- Indexes for table `qr_tb`
+--
+ALTER TABLE `qr_tb`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `user_tb`
 --
 ALTER TABLE `user_tb`
@@ -204,6 +238,12 @@ ALTER TABLE `parr_tb`
 --
 ALTER TABLE `property_tb`
   MODIFY `PROPERTYID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+
+--
+-- AUTO_INCREMENT for table `qr_tb`
+--
+ALTER TABLE `qr_tb`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `user_tb`

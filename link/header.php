@@ -42,4 +42,24 @@
         position: fixed;
         height: 100%;
     }
+    
+    .card-body {
+        max-height: 400px;  /* Adjust based on how much space you want for the table */
+        overflow-y: auto;   /* Enables vertical scrolling when the table exceeds the height */
+    }
+
+    #qrTable {
+        width: 100%;        /* Ensures the table spans the full width of the card-body */
+        border-collapse: collapse;
+    }
+
+    #qrTable th, #qrTable td {
+        text-align: left;
+        padding: 8px;
+    }
+
+    #qrTable th {
+        background-color: #f1f1f1;
+    }
+
 </style>
