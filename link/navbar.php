@@ -55,9 +55,11 @@ if(isset($_SESSION['login']) && $_SESSION['login'] == true) {
                         </button>
                         <div class="collapse show px-3 small mb-1" id="transactionLinks">
                             <ul class="nav nav-pills flex-column rounded border border-light">
-                                <li class="nav-item">
-                                    <a class="nav-link text-white" href="qrcode.php"><i class="bi bi-postage"></i>&nbsp;Generate Stamps</a> 
-                                </li>
+                                <?php if (isset($role) && $role == 'Admin') : ?>
+                                    <li class="nav-item">
+                                        <a class="nav-link text-white" href="qrcode.php"><i class="bi bi-postage"></i>&nbsp;Generate Stamps</a> 
+                                    </li>
+                                <?php endif; ?>
                                 <li class="nav-item">
                                     <a class="nav-link text-white" href="scan.php"><i class="bi bi-upc-scan"></i>&nbsp;Scan Stamps</a> 
                                 </li>
