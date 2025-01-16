@@ -5,9 +5,9 @@ require_once('tcpdf/tcpdf.php');
 
 $id = $_GET['id'];
 
-$sql = "SELECT * FROM par_tb WHERE id = '$id'";
+$sql = "SELECT * FROM par_tb WHERE property_number = '$id'";
 $result = $conn->query($sql);
-
+$rows = '';
 if ($result->num_rows > 0) {
   // output data of each row
   while($row = $result->fetch_assoc()) {
@@ -24,6 +24,17 @@ if ($result->num_rows > 0) {
     $received_by = $row['received_by'];
     $issued_by = $row['issued_by'];
     $date_file = $row['date_file'];
+
+    $rows .= '
+        <tr>
+            <td style="height:120px;text-align: center;">'.$qty.'</td>
+            <td style="text-align: center;">'.$unit.'</td>
+            <td style="text-align: justify;">'.$description.'</td>
+            <td style="text-align: center;">'.$property_number.'</td>
+            <td style="text-align: center;">'.$date_acquired.'</td>
+            <td style="text-align: right;">'.$amount.'</td>
+        </tr>
+    ';
   }
 }
 
@@ -92,16 +103,7 @@ $html = '
         </tr>
     </thead>
     <tbody>
-        <tr>
-            <td style="height:280px; text-align: center;">'.$qty.'</td>
-            <td style="text-align: center;">'.$unit.'</td>
-            <td style="text-align: justify;">'.$description.'</td>
-            <td style="text-align: center;">'.$property_number.'</td>
-            <td style="text-align: center;">'.$date_acquired.'</td>
-            <td style="text-align: right;">'.$amount.'<br><br><br><br><br>
-                <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-                <br><br><br>'.$amount.'</td>
-        </tr>
+        '.$rows.'
         <tr>
             <td colspan="3">Received by:<br><br><br>
                 <div style="text-align: center;">

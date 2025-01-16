@@ -62,4 +62,57 @@
         background-color: #f1f1f1;
     }
 
+    .form-container {
+        display: flex; /* Set flex container */
+        max-width: 1200px;
+        width: 100%;
+        background-color: #fff;
+        border: 1px solid #000;
+        padding: 20px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .col-lg-6 {
+        flex: 1; /* Ensure both columns take up equal space */
+        display: flex;
+        flex-direction: column;
+    }
+
+    .scanner-container {
+        height: 100%; /* Take full height */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 2px solid #ccc;
+    }
+
+    #preview {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .form-container .col-lg-6:first-child {
+        padding-right: 15px;
+    }
+
+    .form-container .col-lg-6:last-child {
+        padding-left: 15px;
+    }
+
+    /* Mobile-friendly styles */
+    @media (max-width: 768px) {
+        .form-container {
+            flex-direction: column; /* Stack the form and scanner on smaller screens */
+        }
+
+        .scanner-container {
+            margin-top: 20px;
+        }
+
+        .form-container .col-lg-6 {
+            padding: 10px;
+        }
+    }
+
 </style>

@@ -45,7 +45,7 @@
                                         <td>{$row['amount']}</td>
                                         <td>{$row['date_file']}</td>
                                         <td>
-                                            <a href='print_par.php?id={$row['id']}' target='_blank' class='btn btn-success btn-sm'><i class='bi bi-printer'></i></a>
+                                            <a href='print_par.php?id={$row['property_number']}' target='_blank' class='btn btn-success btn-sm'><i class='bi bi-printer'></i></a>
                                             <a href='delete_par.php?id={$row['id']}' class='btn btn-danger btn-sm'><i class='bi bi-trash'></i></a>
                                         </td>
                                     </tr>";
