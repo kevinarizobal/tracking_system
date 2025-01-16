@@ -1,4 +1,10 @@
-<?php //require("inc/connect.php");?>
+<?php 
+// Check if the user is logged in and has a role
+if(isset($_SESSION['login']) && $_SESSION['login'] == true) {
+    $role = $_SESSION['Role']; 
+}
+?>
+
 <nav class="navbar navbar-expand-lg navbar-light bg-primary sticky-top">
   <div class="container-fluid text-dark p-2 d-flex align-items-center justify-content-between">
     <a class="navbar-brand text-dark d-flex align-items-center" href="#">
@@ -58,14 +64,19 @@
                             </ul>
                         </div>
                     </li>
+                    
+                    <?php if (isset($role) && $role == 'Admin') : ?>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="log.php"><i class="bi bi-journal"></i>&nbsp;Activity Log</a>
+                        </li>
+                    <?php endif; ?>
 
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="#"><i class="bi bi-journal"></i>&nbsp;Activity Log</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="user.php"><i class="bi bi-person-add"></i>&nbsp;Manage User</a>
-                    </li>
+                    <?php if (isset($role) && $role == 'Admin') : ?>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="user.php"><i class="bi bi-person-add"></i>&nbsp;Manage User</a>
+                        </li>
+                    <?php endif; ?>
+                    
                 </ul>
             </div>
 

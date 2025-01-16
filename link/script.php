@@ -53,6 +53,10 @@ $(document).ready(function() {
 $(document).ready(function() {
     $('#crud-table').DataTable();
 });
+
+$(document).ready(function() {
+    $('#userTable2').DataTable();
+});
 </script>
 
 <script>

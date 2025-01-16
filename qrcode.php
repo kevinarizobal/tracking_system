@@ -1,5 +1,16 @@
 <?php
 include('config.php');
+session_start();
+
+// Check if the user is logged in
+if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
+    // Redirect to login page if not logged in
+    header("Location: index.php");
+    exit();
+}
+?>
+<?php
+include('config.php');
 
 // Generate random Property No and Serial No
 $random_property_id = rand(100, 999);  // Generates a random property number between 100 and 999

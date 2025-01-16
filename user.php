@@ -1,3 +1,14 @@
+<?php
+include('config.php');
+session_start();
+
+// Check if the user is logged in
+if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
+    // Redirect to login page if not logged in
+    header("Location: index.php");
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <?php include('link/header.php');?>
