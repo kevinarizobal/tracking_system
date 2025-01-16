@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jan 09, 2025 at 09:35 AM
+-- Generation Time: Jan 16, 2025 at 09:51 AM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 7.3.33
 
@@ -40,6 +40,38 @@ CREATE TABLE `icsr_tb` (
   `RB` datetime DEFAULT NULL,
   `AllTotalCost` decimal(10,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ics_tb`
+--
+
+CREATE TABLE `ics_tb` (
+  `id` int(11) NOT NULL,
+  `entity_name` text DEFAULT NULL,
+  `fund_cluster` text DEFAULT NULL,
+  `ics_no` text DEFAULT NULL,
+  `qty` int(11) DEFAULT NULL,
+  `unit` text DEFAULT NULL,
+  `unit_cost` int(11) DEFAULT NULL,
+  `total_cost` int(11) DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `item_no` text DEFAULT NULL,
+  `estimate` text DEFAULT NULL,
+  `receive_by` text DEFAULT NULL,
+  `role1` text DEFAULT NULL,
+  `issue_by` text DEFAULT NULL,
+  `role2` text DEFAULT NULL,
+  `date_file` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `ics_tb`
+--
+
+INSERT INTO `ics_tb` (`id`, `entity_name`, `fund_cluster`, `ics_no`, `qty`, `unit`, `unit_cost`, `total_cost`, `description`, `item_no`, `estimate`, `receive_by`, `role1`, `issue_by`, `role2`, `date_file`) VALUES
+(1, 'Nemsu Cantilan Campus', '05-206441', '24-128', 10, 'unit', 6000, 60000, 'Moving white board (4\" x 5\")', '24-09-496', '5 yrs', 'ERNESTO GONZALES', 'Supply Office', 'JUANCHO INTANO', 'Campus director', '2025-01-16');
 
 -- --------------------------------------------------------
 
@@ -85,6 +117,37 @@ CREATE TABLE `parr_tb` (
 
 INSERT INTO `parr_tb` (`PARRID`, `EntityName`, `FundCluster`, `PARRNo`, `RecievedBy`, `RBPositionOffice`, `RB`, `IssuedBy`, `IBPositionOffice`, `IB`, `AllTotalAmount`) VALUES
 (23, 'NEMSU-Cantilan Campus', '05-206441', '24-07-016', 'Engr. Jordan Y. Arpilleda', 'Maint.', '2024-08-08 10:48:04', 'Ernesto L. Gonzales', 'AOI/Supply Officer', '2024-08-08 10:48:04', '225000.00');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `par_tb`
+--
+
+CREATE TABLE `par_tb` (
+  `id` int(11) NOT NULL,
+  `entity_name` varchar(255) DEFAULT NULL,
+  `fund_cluster` varchar(255) DEFAULT NULL,
+  `par_no` varchar(100) DEFAULT NULL,
+  `qty` int(11) DEFAULT NULL,
+  `unit` varchar(50) DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `property_number` varchar(100) DEFAULT NULL,
+  `date_acquired` date DEFAULT NULL,
+  `amount` decimal(10,2) DEFAULT NULL,
+  `received_by` varchar(255) DEFAULT NULL,
+  `position` text DEFAULT NULL,
+  `issued_by` varchar(255) DEFAULT NULL,
+  `date_file` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `par_tb`
+--
+
+INSERT INTO `par_tb` (`id`, `entity_name`, `fund_cluster`, `par_no`, `qty`, `unit`, `description`, `property_number`, `date_acquired`, `amount`, `received_by`, `position`, `issued_by`, `date_file`) VALUES
+(4, 'Department of Computer Studies Networking Laboratory', '03-414-2025', '0129981', 50, 'unit', 'Personal Computer with Window fully licenses', '09123', '2025-01-16', '600000.00', 'LYNDON ROSAS', 'DCS Faculty', 'ERNESTO GONZALES', '2025-01-16'),
+(5, 'asfsfsafasf', 'xasdxasd1241', 'sasasf221123', 3, 'pcs', 'asxfasfs, asfasfasf, gafasfas, asgasgasf', '09123', '2025-01-31', '50000.00', 'qwdqwdqwd', 'zasdzsadsad', 'ERNESTO GONZALES', '2025-01-16');
 
 -- --------------------------------------------------------
 
@@ -137,7 +200,8 @@ CREATE TABLE `qr_tb` (
 --
 
 INSERT INTO `qr_tb` (`id`, `serial_id`, `property_id`, `article`, `office`, `service_status`, `unit`, `cost`, `date_acquired`, `date_counted`, `coa_rep`, `property_cus`) VALUES
-(3, 'SN-566', 'PN-579', 'Sample Item 2', 'Department of Computer Studies Laboratory', 'Serviceable', '200 pcs', '550000', '2025-01-09', '2025-01-23', 'Juancho Intano', 'Ernesto Gonzales');
+(3, 'SN-566', 'PN-579', 'Sample Item 2', 'Department of Computer Studies Laboratory', 'Serviceable', '200 pcs', '550000', '2025-01-09', '2025-01-23', 'Juancho Intano', 'Ernesto Gonzales'),
+(4, 'SN-200', 'PN-206', 'New Office in Wing B', 'Forty Degrees Celsius Inc', 'Unserviceable', '180 unit', '450000', '2025-01-14', '2025-01-06', 'Juancho Intano', 'Ernesto Gonzales');
 
 -- --------------------------------------------------------
 
@@ -163,7 +227,8 @@ CREATE TABLE `user_tb` (
 
 INSERT INTO `user_tb` (`userid`, `email`, `username`, `fullname`, `password`, `role`, `datecreated`, `lastlogin`, `status`) VALUES
 (2, 'admin@gmail.com', 'admin', 'Administrator', 'c4ca4238a0b923820dcc509a6f75849b', 'Admin', '2024-12-09 17:11:54', '2024-12-18 16:40:11', 'Active'),
-(3, 'jaybe@gmail.com', 'jaybe123', 'Jaybe Siano', '7d88985a5821fa01ca0c544e875fb56b', 'Staff', '2025-01-08 09:56:10', NULL, 'Active');
+(3, 'jaybe@gmail.com', 'jaybe123', 'Jaybe Siano', '7d88985a5821fa01ca0c544e875fb56b', 'Staff', '2025-01-08 09:56:10', NULL, 'Active'),
+(7, 'kevin.arizobal@yahoo.com', 'ncwww', 'Administrator', 'f47cd8cc9729e5b92eb9513f91ce45e9', 'Admin', '2025-01-14 09:49:18', '2025-01-14 09:49:18', 'Active');
 
 --
 -- Indexes for dumped tables
@@ -175,6 +240,12 @@ INSERT INTO `user_tb` (`userid`, `email`, `username`, `fullname`, `password`, `r
 ALTER TABLE `icsr_tb`
   ADD PRIMARY KEY (`ICSID`),
   ADD UNIQUE KEY `ICSNo` (`ICSNo`);
+
+--
+-- Indexes for table `ics_tb`
+--
+ALTER TABLE `ics_tb`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `item_tb`
@@ -189,6 +260,12 @@ ALTER TABLE `item_tb`
 ALTER TABLE `parr_tb`
   ADD PRIMARY KEY (`PARRID`),
   ADD UNIQUE KEY `PARRNo` (`PARRNo`);
+
+--
+-- Indexes for table `par_tb`
+--
+ALTER TABLE `par_tb`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `property_tb`
@@ -222,6 +299,12 @@ ALTER TABLE `icsr_tb`
   MODIFY `ICSID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
+-- AUTO_INCREMENT for table `ics_tb`
+--
+ALTER TABLE `ics_tb`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT for table `item_tb`
 --
 ALTER TABLE `item_tb`
@@ -234,6 +317,12 @@ ALTER TABLE `parr_tb`
   MODIFY `PARRID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
+-- AUTO_INCREMENT for table `par_tb`
+--
+ALTER TABLE `par_tb`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
 -- AUTO_INCREMENT for table `property_tb`
 --
 ALTER TABLE `property_tb`
@@ -243,13 +332,13 @@ ALTER TABLE `property_tb`
 -- AUTO_INCREMENT for table `qr_tb`
 --
 ALTER TABLE `qr_tb`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `user_tb`
 --
 ALTER TABLE `user_tb`
-  MODIFY `userid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `userid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- Constraints for dumped tables
