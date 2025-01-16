@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-<?php include('link/header.php');?>
+<?php include('link/header.php'); ?>
 <body>
-<?php include('link/navbar.php');?>
-    <div class="container form-container mt-3 " style="margin-left: 20%;width: 90%;">
+<?php include('link/navbar.php'); ?>
+    <div class="container form-container mt-3" style="margin-left: 20%; width: 90%;">
         <div class="row">
             <!-- Left Side (Form) -->
             <div class="col-lg-6 col-md-12 mb-4">
@@ -37,12 +37,12 @@
                             </div>
                         </div>
                         <div class="col-lg-4 mb-3">
-                            <label for="unit-quantity" class="form-label">Unit/Quantity:</label>
-                            <input type="text" id="unit-quantity" name="unit-quantity" class="form-control">
+                            <label for="unit" class="form-label">Unit/Quantity:</label>
+                            <input type="text" id="unit" name="unit" class="form-control">
                         </div>
                         <div class="col-lg-4 mb-3">
-                            <label for="acquisition-cost" class="form-label">Acquisition Cost:</label>
-                            <input type="text" id="acquisition-cost" name="acquisition-cost" class="form-control">
+                            <label for="cost" class="form-label">Acquisition Cost:</label>
+                            <input type="text" id="cost" name="cost" class="form-control">
                         </div>
                         <div class="col-lg-3 mb-3">
                             <label for="date-acquired" class="form-label">Date Acquired:</label>
@@ -100,8 +100,8 @@
                         document.getElementById('article').value = data.article;
                         document.getElementById('property-no').value = data.property_id;
                         document.getElementById('serial-no').value = data.serial_id;
-                        document.getElementById('unit-quantity').value = data.unit;
-                        document.getElementById('acquisition-cost').value = data.cost;
+                        document.getElementById('unit').value = data.unit;
+                        document.getElementById('cost').value = data.cost;
                         document.getElementById('date-acquired').value = data.date_acquired;
                         document.getElementById('date-counted').value = data.date_counted;
                         document.getElementById('coa-representative').value = data.coa_rep;
@@ -123,6 +123,34 @@
             }
         }).catch(function (e) {
             console.error(e);
+        });
+
+        // Handle form submission
+        document.getElementById('property-form').addEventListener('submit', function (e) {
+            e.preventDefault(); // Prevent form from submitting normally
+
+            const formData = new FormData(this);
+            
+            // Convert the form data to an object
+            const formObject = {};
+            formData.forEach((value, key) => {
+                formObject[key] = value;
+            });
+            
+            // Send the data to the server
+            fetch('update_qr.php', {
+                method: 'POST',
+                body: new URLSearchParams(formObject)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Record updated successfully');
+                } else {
+                    alert(data.message || 'Error updating the record');
+                }
+            })
+            .catch(error => console.error('Error:', error));
         });
     </script>
 </body>
