@@ -2,11 +2,11 @@
 include('config.php');
 
 $id = $_GET['id'];
-$sql = "DELETE FROM par_tb WHERE id = $id";
+$sql = "DELETE FROM ics_tb WHERE id = $id";
 
 if ($conn->query($sql)) {
     echo "<script>alert('Deleted Successfully!!');</script>";
-    header("Location: par.php"); 
+    header("Location: ics.php"); 
 } else {
     echo "Error: " . $conn->error;
 }

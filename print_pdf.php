@@ -71,11 +71,11 @@ if ($result && $result->num_rows > 0) {
                             </div>
                             <div class="col-lg-3 mb-1">
                                 <div class="form-check">
-                                    <input type="checkbox" id="serviceable" name="condition" class="form-check-input" <?= $serviceable ? 'checked' : ''; ?>>
+                                    <input type="checkbox" id="serviceable" name="condition" class="form-check-input" value="Serviceable" <?= $serviceable ? 'checked' : ''; ?>>
                                     <label class="form-check-label" for="serviceable">Serviceable</label>
                                 </div>
                                 <div class="form-check">
-                                    <input type="checkbox" id="unserviceable" name="condition" class="form-check-input" <?= $unserviceable ? 'checked' : ''; ?>>
+                                    <input type="checkbox" id="unserviceable" name="condition" class="form-check-input" value="Unserviceable" <?= $unserviceable ? 'checked' : ''; ?>>
                                     <label class="form-check-label" for="unserviceable">Unserviceable</label>
                                 </div>
                             </div>

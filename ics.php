@@ -9,7 +9,7 @@
     <div class="row">
         <div class="col-lg-10 ms-auto p-4 overflow-hidden">
             <div class="d-flex align-items-center justify-content-between mb-4">
-                <h3>PROPERTY ACKNOWLDEMENT RECEIPT (PAR)</h3>
+                <h3>INVENTORY CUSTODIAN SLIP (ICS)</h3>
             </div>
             <div class="card">
                 <div class="card-body">
@@ -19,12 +19,11 @@
                     <table class="table table-responsive mt-4" id="crud-table">
                         <thead>
                             <tr>
-                                <th>PAR No.</th>
+                                <th>ICS No.</th>
                                 <th>Quantity</th>
                                 <th>Unit</th>
                                 <th>Description</th>
-                                <th>Property Number</th>
-                                <th>Amount</th>
+                                <th>Inventory Number</th>
                                 <th>Date Filed</th>
                                 <th>Action</th>
                             </tr>
@@ -33,20 +32,19 @@
                         <?php
                             include('config.php');
                             $num = 1;
-                            $sql = "SELECT * FROM par_tb";
+                            $sql = "SELECT * FROM ics_tb";
                             $result = $conn->query($sql);
                             while($row = $result->fetch_assoc()) {
                                 echo "<tr>
-                                        <td>{$row['par_no']}</td>
+                                        <td>{$row['ics_no']}</td>
                                         <td>{$row['qty']}</td>
                                         <td>{$row['unit']}</td>
                                         <td>{$row['description']}</td>
-                                        <td>{$row['property_number']}</td>
-                                        <td>{$row['amount']}</td>
+                                        <td>{$row['item_no']}</td>
                                         <td>{$row['date_file']}</td>
                                         <td>
-                                            <a href='print_par.php?id={$row['id']}' target='_blank' class='btn btn-success btn-sm'><i class='bi bi-printer'></i></a>
-                                            <a href='delete_par.php?id={$row['id']}' class='btn btn-danger btn-sm'><i class='bi bi-trash'></i></a>
+                                            <a href='print_ics.php?id={$row['item_no']}' target='_blank' class='btn btn-success btn-sm'><i class='bi bi-printer'></i></a>
+                                            <a href='delete_ics.php?id={$row['id']}' class='btn btn-danger btn-sm'><i class='bi bi-trash'></i></a>
                                         </td>
                                     </tr>";
                             }
@@ -63,7 +61,7 @@
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="crudModalLabel">PAR Input Fields</h5>
+                <h5 class="modal-title" id="crudModalLabel">ICS Input Fields</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -77,25 +75,37 @@
                             <label for="fund-cluster" class="form-label">Fund Cluster</label>
                             <input type="text" class="form-control" id="fund-cluster" name="fund-cluster" required>
                         </div>
-                        <div class="col-lg-6 mb-3">
-                            <label for="par-no" class="form-label">PAR No</label>
+                        <div class="col-lg-3 mb-3">
+                            <label for="par-no" class="form-label">ICS No</label>
                             <input type="text" class="form-control" id="par-no" name="par-no" required>
                         </div>
-                        <div class="col-lg-6 mb-3">
+                        <div class="col-lg-3 mb-3">
+                            <label for="item-number" class="form-label">Item Number</label>
+                            <input type="text" class="form-control mb-2" name="item-number" required>
+                        </div>
+                        <div class="col-lg-3 mb-3">
                             <label for="date-acquired" class="form-label">Date Acquired</label>
                             <input type="date" class="form-control" name="date-acquired" required>
+                        </div>
+                        <div class="col-lg-3 mb-3">
+                            <label for="estimate" class="form-label">Estimate</label>
+                            <input type="text" class="form-control" name="estimate" required>
                         </div>
                         <div class="col-lg-6 mb-3">
                             <label for="received-by" class="form-label">Received By</label>
                             <input type="text" class="form-control" id="received-by" name="received-by" required>
                         </div>
                         <div class="col-lg-6 mb-3">
-                            <label for="position" class="form-label">Position/Office</label>
-                            <input type="text" class="form-control" id="position" name="position" required>
+                            <label for="role1" class="form-label">Position/Office</label>
+                            <input type="text" class="form-control" id="role1" name="role1" required>
                         </div>
                         <div class="col-lg-6 mb-3">
                             <label for="issued-by" class="form-label">Issued By</label>
                             <input type="text" class="form-control" id="issued-by" name="issued-by" required>
+                        </div>
+                        <div class="col-lg-6 mb-3">
+                            <label for="role2" class="form-label">Position/Office</label>
+                            <input type="text" class="form-control" id="role2" name="role2" required>
                         </div>
                     </div>
                     <div id="dynamic-fields">
@@ -112,10 +122,10 @@
                                     <input type="text" class="form-control mb-2" name="description[]" placeholder="Description" required>
                                 </div>
                                 <div class="col-lg-2">
-                                    <input type="text" class="form-control mb-2" name="property-number[]" placeholder="Property Number" required>
+                                    <input type="number" class="form-control mb-2" name="cost[]" placeholder="Unit Cost" required>
                                 </div>
                                 <div class="col-lg-2">
-                                    <input type="number" class="form-control mb-2" name="amount[]" placeholder="Amount" required>
+                                    <input type="number" class="form-control mb-2" name="amount[]" placeholder="Total Amount" required>
                                 </div>
                                 <div class="col-lg-2">
                                     <button type="button" class="btn btn-danger removeField">Remove</button>
@@ -185,7 +195,7 @@
                             <input type="text" class="form-control mb-2" name="description[]" placeholder="Description" required>
                         </div>
                         <div class="col-lg-2">
-                            <input type="text" class="form-control mb-2" name="property-number[]" placeholder="Property Number" required>
+                            <input type="number" class="form-control mb-2" name="cost[]" placeholder="Unit Cost" required>
                         </div>
                         <div class="col-lg-2">
                             <input type="number" class="form-control mb-2" name="amount[]" placeholder="Amount" required>
@@ -208,7 +218,7 @@
             e.preventDefault();
             $.ajax({
                 type: 'POST',
-                url: 'insert_par.php',
+                url: 'insert_ics.php',
                 data: $(this).serialize(),
                 success: function (response) {
                     alert(response);

@@ -9,13 +9,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $received_by = $_POST['received-by'];
     $issued_by = $_POST['issued-by'];
     $date_file = date('Y-m-d'); // Current date
+    $position = $_POST['position'];
 
     // Prepare SQL statement with placeholders
-    $stmt = $conn->prepare("INSERT INTO par_tb (entity_name, fund_cluster, par_no, qty, unit, description, property_number, date_acquired, amount, received_by, issued_by, date_file)
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO par_tb (entity_name, fund_cluster, par_no, qty, unit, description, property_number, date_acquired, amount, received_by, position, issued_by, date_file)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
     // Bind parameters
-    $stmt->bind_param("ssssssssssss", $entity_name, $fund_cluster, $par_no, $qty, $unit, $description, $property_number, $date_acquired, $amount, $received_by, $issued_by, $date_file);
+    $stmt->bind_param("sssssssssssss", $entity_name, $fund_cluster, $par_no, $qty, $unit, $description, $property_number, $date_acquired, $amount, $received_by, $position, $issued_by, $date_file);
 
     // Loop through dynamic fields and insert each item
     $quantities = $_POST['quantity'];
