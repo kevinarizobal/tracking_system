@@ -33,10 +33,10 @@
                         <div class="collapse show px-3 small mb-1" id="transactionLinks">
                             <ul class="nav nav-pills flex-column rounded border border-light">
                                 <li class="nav-item">
-                                    <a class="nav-link text-white" href="#"><i class="bi bi-file-earmark-bar-graph"></i>&nbsp;Inventory | ICS</a> 
+                                    <a class="nav-link text-white" href="ics.php"><i class="bi bi-file-earmark-bar-graph"></i>&nbsp;Inventory | ICS</a> 
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link text-white" href="#"><i class="bi bi-file-earmark-post"></i>&nbsp;Property | PAR</a> 
+                                    <a class="nav-link text-white" href="#par.php"><i class="bi bi-file-earmark-post"></i>&nbsp;Property | PAR</a> 
                                 </li>
                             </ul>
                         </div>
