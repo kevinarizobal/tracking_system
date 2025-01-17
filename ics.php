@@ -1,14 +1,3 @@
-<?php
-include('config.php');
-session_start();
-
-// Check if the user is logged in
-if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
-    // Redirect to login page if not logged in
-    header("Location: index.php");
-    exit();
-}
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -55,6 +44,7 @@ if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
                                         <td>{$row['date_file']}</td>
                                         <td>
                                             <a href='print_ics.php?id={$row['item_no']}' target='_blank' class='btn btn-success btn-sm'><i class='bi bi-printer'></i></a>
+                                            <a href='update_ics.php?id={$row['id']}' class='btn btn-primary btn-sm'><i class='bi bi-pencil-square'></i></a>
                                             <a href='delete_ics.php?id={$row['id']}' class='btn btn-danger btn-sm'><i class='bi bi-trash'></i></a>
                                         </td>
                                     </tr>";
