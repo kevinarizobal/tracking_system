@@ -102,15 +102,19 @@ if (isset($_POST['update'])) {
                                 <label class="form-label" style="font-weight: 500;">PAR No.</label>
                                 <input type="text" id="par-no" name="par_no" class="form-control" value="<?= htmlspecialchars($par_no); ?>" >
                             </div>
-                            <div class="col-3 mb-3">
+                            <div class="col-4 mb-3">
                                 <label class="form-label" style="font-weight: 500;">Quantity</label>
-                                <input type="text" id="qty" name="qty" class="form-control" value="<?= htmlspecialchars($qty); ?>" >
+                                <input type="number" id="qty" name="qty" class="form-control" value="<?= htmlspecialchars($qty); ?>" >
                             </div>
-                            <div class="col-3 mb-3">
+                            <div class="col-4 mb-3">
+                                <label class="form-label" style="font-weight: 500;">Unit</label>
+                                <input type="text" id="unit" name="unit" class="form-control" value="<?= htmlspecialchars($unit); ?>" >
+                            </div>
+                            <div class="col-4 mb-3">
                                 <label class="form-label" style="font-weight: 500;">Property No.</label>
                                 <input type="text" id="property-no" name="property_no" class="form-control" value="<?= htmlspecialchars($property_number); ?>">
                             </div>
-                            <div class="col-6 mb-3">
+                            <div class="col-12 mb-3">
                                 <label class="form-label" style="font-weight: 500;">Description</label>
                                 <input type="text" id="description" name="description" class="form-control" value="<?= htmlspecialchars($description); ?>">
                             </div>
