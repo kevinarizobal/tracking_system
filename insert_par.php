@@ -6,6 +6,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $fund_cluster = $_POST['fund-cluster'];
     $par_no = $_POST['par-no'];
     $date_acquired = $_POST['date-acquired'];
+    $property_number = $_POST['property-number']; // Single value outside the loop
     $received_by = $_POST['received-by'];
     $issued_by = $_POST['issued-by'];
     $date_file = date('Y-m-d'); // Current date
@@ -22,19 +23,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $quantities = $_POST['quantity'];
     $units = $_POST['unit'];
     $descriptions = $_POST['description'];
-    $property_numbers = $_POST['property-number'];
     $amounts = $_POST['amount'];
 
     for ($i = 0; $i < count($quantities); $i++) {
         $qty = $quantities[$i];
         $unit = $units[$i];
         $description = $descriptions[$i];
-        $property_number = $property_numbers[$i];
         $amount = $amounts[$i];
 
         // Execute the prepared statement
         if (!$stmt->execute()) {
             echo "Error: " . $stmt->error;
+            exit; // Stop script execution on error
         }
     }
 
