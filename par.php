@@ -87,6 +87,10 @@
                             <input type="date" class="form-control" name="date-acquired" required>
                         </div>
                         <div class="col-lg-6 mb-3">
+                            <label for="property-number" class="form-label">Property</label>
+                            <input type="text" class="form-control mb-2" name="property-number" placeholder="Property Number" required>
+                        </div>
+                        <div class="col-lg-6 mb-3">
                             <label for="received-by" class="form-label">Received By</label>
                             <input type="text" class="form-control" id="received-by" name="received-by" required>
                         </div>
@@ -111,9 +115,6 @@
                                 </div>
                                 <div class="col-lg-4">
                                     <input type="text" class="form-control mb-2" name="description[]" placeholder="Description" required>
-                                </div>
-                                <div class="col-lg-2">
-                                    <input type="text" class="form-control mb-2" name="property-number[]" placeholder="Property Number" required>
                                 </div>
                                 <div class="col-lg-2">
                                     <input type="number" class="form-control mb-2" name="amount[]" placeholder="Amount" required>
@@ -184,9 +185,6 @@
                         </div>
                         <div class="col-lg-4">
                             <input type="text" class="form-control mb-2" name="description[]" placeholder="Description" required>
-                        </div>
-                        <div class="col-lg-2">
-                            <input type="text" class="form-control mb-2" name="property-number[]" placeholder="Property Number" required>
                         </div>
                         <div class="col-lg-2">
                             <input type="number" class="form-control mb-2" name="amount[]" placeholder="Amount" required>
