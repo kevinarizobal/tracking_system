@@ -1,138 +1,136 @@
 <?php
-include('config.php');
-// Include the main TCPDF library
 require_once('tcpdf/tcpdf.php');
+include('config.php'); // Include database connection
 
-$id = $_GET['id'];
-
-$sql = "SELECT * FROM par_tb WHERE property_number = '$id'";
-$result = $conn->query($sql);
-$rows = '';
-if ($result->num_rows > 0) {
-  // output data of each row
-  while($row = $result->fetch_assoc()) {
-    $qty = $row['qty'];
-    $unit = $row['unit'];
-    $description = $row['description'];
-    $property_number = $row['property_number'];
-    $date_acquired = $row['date_acquired'];
-    $amount = $row['amount'];
-    $entity_name = $row['entity_name'];
-    $fund_cluster = $row['fund_cluster'];
-    $par_no = $row['par_no'];
-    $position = $row['position'];
-    $received_by = $row['received_by'];
-    $issued_by = $row['issued_by'];
-    $date_file = $row['date_file'];
-
-    $rows .= '
-        <tr>
-            <td style="height:120px;text-align: center;">'.$qty.'</td>
-            <td style="text-align: center;">'.$unit.'</td>
-            <td style="text-align: justify;">'.$description.'</td>
-            <td style="text-align: center;">'.$property_number.'</td>
-            <td style="text-align: center;">'.$date_acquired.'</td>
-            <td style="text-align: right;">'.$amount.'</td>
-        </tr>
-    ';
-  }
+// Extend TCPDF class to create custom header/footer
+class MYPDF extends TCPDF {
+    public function Header() {
+        $this->SetFont('helvetica', 'B', 12);
+        $this->Cell(0, 35, 'PROPERTY ACKNOWLEDGMENT RECEIPT', 0, 1, 'C');
+    }
 }
 
+// Create PDF instance with long bond paper size (8.5 x 13 inches)
+$pdf = new MYPDF();
+$pdf->SetMargins(2.54, 25, 2.54);
+$pdf->AddPage('P', array(215.9, 330.2));  // 'P' for portrait orientation
 
-// Create a new PDF document
-$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+$pdf->SetFont('helvetica', '', 10);
+$pdf->Ln(5);
+// Validate and fetch data from database
+$id = isset($_GET['id']) ? $_GET['id'] : '';
+if (!$id) {
+    die("No property ID provided.");
+}
 
-// Set document information
-$pdf->SetCreator(PDF_CREATOR);
-$pdf->SetAuthor('Your Name');
-$pdf->SetTitle('NEMSU-SUPTRACK');
-$pdf->SetSubject('TCPDF Tutorial');
-$pdf->SetKeywords('TCPDF, PDF, table, example, guide');
+$sql = "SELECT * FROM par_tb WHERE property_number = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $id);
+$stmt->execute();
+$result = $stmt->get_result();
 
-// Set default header and footer
-$pdf->setPrintHeader(false);
-$pdf->setPrintFooter(false);
+$data = [];
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $data[] = [
+            'qty' => $row['qty'],
+            'unit' => $row['unit'],
+            'desc' => $row['description'],
+            'prop_no' => $row['property_number'],
+            'date' => $row['date_acquired'],
+            'amount' => $row['amount'],
+        ];
+        $entityName = $row['entity_name'];
+        $fundCluster = $row['fund_cluster'];
+        $parNumber = $row['par_no'];
+        $received_by = $row['received_by'];
+        $issued_by = $row['issued_by'];
+        $position = $row['position'];
+        $date_file = $row['date_file'];
+    }
+} else {
+    die("No records found.");
+}
 
-// Set margins
-$pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+// Set consistent widths
+$tableWidth = 210;   // Total width of the table
+$signWidth = $tableWidth;  // Signature section width
 
-// Set auto page breaks
-$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+// Entity Name and PAR No.
+$pdf->Cell(105, 6, "Entity Name: $entityName", 0, 0, 'L'); // Left-aligned
+$pdf->Cell(105, 6, "", 0, 1, 'R');      // Right-aligned
 
-// Set font
-$pdf->SetFont('helvetica', '', 12);
+// Fund Cluster and PAR No.
+$pdf->Cell(105, 6, "Fund Cluster: $fundCluster", 0, 0, 'L');  // Left-aligned
+$pdf->Cell(105, 6, "PAR No.: $parNumber", 0, 1, 'R');         // Right-aligned
 
-// Add a page
-$pdf->AddPage();
+// Add spacing
+$pdf->Ln(5);
 
-// Add header
-$pdf->SetFont('helvetica', 'B', 14);
-$pdf->Cell(0, 10, 'PROPERTY ACKNOWLEDGMENT RECEIPT', 0, 1, 'C');
-$pdf->Ln(5); // Add some space
+// Table headers (centered)
+$pdf->SetX(($pdf->GetPageWidth() - $tableWidth) / 2);  // Center position
+$pdf->SetFont('helvetica', '', 10);
 
-// Add entity details
-$pdf->SetFont('helvetica', '', 12);
-$pdf->Cell(50, 10, 'Entity Name:', 0, 0);
-$pdf->SetFont('helvetica', 'B', 12);
-$pdf->Cell(100, 10, $entity_name, 0, 1);
+// Header row
+$pdf->Cell(30, 8, "Quantity", 1, 0, 'C');
+$pdf->Cell(30, 8, "Unit", 1, 0, 'C');
+$pdf->Cell(60, 8, "Description", 1, 0, 'C');
+$pdf->Cell(30, 8, "Property No.", 1, 0, 'C');
+$pdf->Cell(30, 8, "Date Acquired", 1, 0, 'C');
+$pdf->Cell(30, 8, "Amount", 1, 1, 'C');
 
-$pdf->SetFont('helvetica', '', 12);
-$pdf->Cell(50, 10, 'Fund Cluster:', 0, 0); // Fund Cluster label
-$pdf->SetFont('helvetica', 'B', 12);
-$pdf->Cell(50, 10, $fund_cluster, 0, 0); // Fund Cluster value
+// Populate table rows
+$pdf->SetFont('helvetica', '', 8);
+$totalAmount = 0;
 
-$pdf->SetX(120); // Move to the right for PAR No.
-$pdf->SetFont('helvetica', '', 12);
-$pdf->Cell(30, 10, 'PAR No.:', 0, 0); // PAR No. label
-$pdf->SetFont('helvetica', 'B', 12);
-$pdf->Cell(50, 10, $par_no, 0, 1); // PAR No. value
+foreach ($data as $row) {
+    $totalAmount += $row['amount'];
+    $pdf->SetX(($pdf->GetPageWidth() - $tableWidth) / 2);  // Center position
+    $pdf->Cell(30, 8, $row['qty'], 'LR', 0, 'C');
+    $pdf->Cell(30, 8, $row['unit'], 'LR', 0, 'C');
+    $pdf->Cell(60, 8, $row['desc'], 'LR', 0, 'C');
+    $pdf->Cell(30, 8, $row['prop_no'], 'LR', 0, 'C');
+    $pdf->Cell(30, 8, $row['date'], 'LR', 0, 'C');
+    $pdf->Cell(30, 8, number_format($row['amount'], 2), 'LR', 1, 'C');
+}
+$pdf->SetX(3);
+$pdf->Cell(30, 8, '', 'R', 0, 'C');
+$pdf->Cell(30, 8, '', 'R', 0, 'C');
+$pdf->Cell(60, 8, '', 'R', 0, 'C');
+$pdf->Cell(30, 8, '', 'R', 0, 'C');
+// Add total amount row
+$pdf->SetX(($pdf->GetPageWidth() - $tableWidth) / 2);  // Center position
+$pdf->Cell(180, 8, "", 'LB', 0, 'R');
+$pdf->Cell(30, 8, number_format($totalAmount, 2), 'LRB', 1, 'C');
 
-$pdf->Ln(5); // Add some space
+// Add signature section
+$pdf->Ln(0);
+$pdf->SetX(($pdf->GetPageWidth() - $signWidth) / 2);  // Center position
 
-// Define the table content
-$html = '
-<table border="1" cellpadding="4">
-    <thead>
-        <tr>
-            <th style="background-color:#f2f2f2;text-align: center;">Quantity</th>
-            <th style="background-color:#f2f2f2;text-align: center;">Unit</th>
-            <th style="background-color:#f2f2f2;text-align: center;">Description</th>
-            <th style="background-color:#f2f2f2;text-align: center;">Property Number</th>
-            <th style="background-color:#f2f2f2;text-align: center;">Date Required</th>
-            <th style="background-color:#f2f2f2;text-align: center;">Amount</th>
-        </tr>
-    </thead>
-    <tbody>
-        '.$rows.'
-        <tr>
-            <td colspan="3">Received by:<br><br><br>
-                <div style="text-align: center;">
-                    <span style="text-decoration: underline; text-decoration-thickness: 3px;">'.$received_by.'</span><br>
-                    Signature over Printed Name of End User<br>
-                    '.$position.'<br>
-                    Position/Office<br>
-                    '.$date_file.'<br>
-                    Date
-                </div>
-            </td>
-            <td colspan="3">Issued by:<br><br><br>
-                <div style="text-align: center;">
-                    <span style="text-decoration: underline; text-decoration-thickness: 3px;">'.$issued_by.'</span><br>
-                    Signature over Printed Name of End User<br>
-                    AOI/Supply Office<br>
-                    Position/Office<br>
-                    '.$date_file.'<br>
-                    Date
-                </div>
-            </td>
-        </tr>
-    </tbody>
-</table>
-';
+// Signature lines
+$pdf->Cell(120, 6, "Received by:", 'LR', 0, 'L');
+$pdf->Cell(90, 6, "Issued by:", 'LR', 1, 'L');
 
-// Output the table using writeHTML
-$pdf->writeHTML($html, true, false, true, false, '');
+$pdf->SetX(($pdf->GetPageWidth() - $signWidth) / 2);  // Center position
+$pdf->Cell(120, 6, "___________________________________", 'LR', 0, 'C');
+$pdf->Cell(90, 6, "___________________________________", 'LR', 1, 'C');
 
-// Close and output the PDF document
-$pdf->Output('example_table.pdf', 'I');
+$pdf->SetX(($pdf->GetPageWidth() - $signWidth) / 2);  // Center position
+$pdf->Cell(120, 6, $received_by, 'LR', 0, 'C');
+$pdf->Cell(90, 6, $issued_by, 'LR', 1, 'C');
+
+$pdf->SetX(($pdf->GetPageWidth() - $signWidth) / 2);  // Center position
+$pdf->Cell(120, 6, "Signature over Printed Name of End User", 'LR', 0, 'C');
+$pdf->Cell(90, 6, "Signature over Printed Name of Supply/Property Custodian", 'LR', 1, 'C');
+
+$pdf->SetX(($pdf->GetPageWidth() - $signWidth) / 2);  // Center position
+$pdf->Cell(120, 6, "$position", 'LR', 0, 'C');
+$pdf->Cell(90, 6, "AOI/Supply Officer", 'LR', 1, 'C');
+
+$pdf->SetX(($pdf->GetPageWidth() - $signWidth) / 2);  // Center position
+$pdf->Cell(120, 6, "$date_file", 'LRB', 0, 'C');
+$pdf->Cell(90, 6, "$date_file", 'LRB', 1, 'C');
+
+// Output PDF
+$pdf->Output('property_acknowledgment_receipt.pdf', 'I');
 ?>
