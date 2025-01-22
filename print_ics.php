@@ -1,162 +1,185 @@
 <?php
-include('config.php');
-// Include the main TCPDF library
 require_once('tcpdf/tcpdf.php');
+include('config.php'); // Include database connection
 
-$id = isset($_GET['id']) ? $_GET['id'] : ''; // Check if 'id' exists in the query parameter
-
-if (empty($id)) {
-    die('Item ID is required.');
+// Extend TCPDF class to create a custom header/footer
+class MYPDF extends TCPDF {
+    public function Header() {
+        $this->SetFont('helvetica', 'B', 12);
+        $this->Cell(0, 35, 'INVENTORY CUSTODIAN SLIP', 0, 1, 'C');
+    }
 }
 
-// Prepare the SQL query with a parameterized statement to prevent SQL injection
-$stmt = $conn->prepare("SELECT * FROM ics_tb WHERE item_no = ?");
-$stmt->bind_param('s', $id); // 's' for string type
+// Create PDF instance with long bond paper size (8.5 x 13 inches)
+$pdf = new MYPDF();
+$pdf->SetMargins(25.4, 25, 25.4);  // 1 inch margins (25.4mm)
+$pdf->AddPage('P', array(215.9, 330.2));  // 'P' for portrait orientation
+
+// Create PDF instance with long bond paper size (8.5 x 13 inches)
+$pdf = new MYPDF();
+$pdf->SetMargins(2.54, 25, 2.54);
+$pdf->AddPage('P', array(215.9, 330.2));  // 'P' for portrait orientation
+
+$pdf->SetFont('helvetica', '', 10);
+$pdf->Ln(5);
+// Validate and fetch data from database
+$id = isset($_GET['id']) ? $_GET['id'] : '';
+if (!$id) {
+    die("No property ID provided.");
+}
+
+$sql = "SELECT * FROM ics_tb WHERE item_no = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $id);
 $stmt->execute();
 $result = $stmt->get_result();
 
-$rows = '';
-
+$data = [];
 if ($result->num_rows > 0) {
-    // output data of each row
     while ($row = $result->fetch_assoc()) {
-        $entity_name = $row['entity_name'];
-        $fund_cluster = $row['fund_cluster'];
+        $data[] = [
+            'qty' => $row['qty'],
+            'unit' => $row['unit'],
+            'unit_cost' => $row['unit_cost'],
+            'total_cost' => $row['total_cost'],
+            'desc' => $row['description'],
+            'item_no' => $row['item_no'],
+            'estimate' => $row['estimate'],
+        ];
+        $entityName = $row['entity_name'];
+        $fundCluster = $row['fund_cluster'];
         $ics_no = $row['ics_no'];
-        $qty = $row['qty'];
-        $unit = $row['unit'];
-        $unit_cost = $row['unit_cost'];
-        $total_cost = $row['total_cost'];
-        $description = $row['description'];
-        $item_no = $row['item_no'];
-        $estimated = $row['estimate'];
         $receive_by = $row['receive_by'];
         $role1 = $row['role1'];
         $issue_by = $row['issue_by'];
         $role2 = $row['role2'];
         $date_file = $row['date_file'];
-        $rows .= '
-            <tr>
-                <td style="height:100px; text-align: center;">' . $qty . '</td>
-                <td style="text-align: center;">' . $unit . '</td>
-                <td style="text-align: center;">' . $unit_cost . '</td>
-                <td style="text-align: center;">' . $total_cost . '</td>
-                <td style="text-align: justify;">' . $description . '</td>
-                <td style="text-align: center;">' . $item_no . '</td>
-                <td style="text-align: center;">' . $estimated . '</td>
-            </tr>';
     }
+} else {
+    die("No records found.");
 }
 
-$sql = "SELECT SUM(total_cost) as total_sum FROM ics_tb WHERE item_no = '$id'";
-$result = $conn->query($sql);
+// Entity Name and PAR No.
+$pdf->Cell(35, 6, "Entity Name:", 0, 0, 'L');
+$pdf->SetFont('helvetica', 'U', 10);
+$pdf->Cell(70, 6, $entityName, 0, 1, 'L');
+$pdf->SetFont('helvetica', '', 10);
 
-if ($result->num_rows > 0) {
-  // output data of each row
-  while($row = $result->fetch_assoc()) {
-    $total_sum = $row['total_sum'];
-  }
+$pdf->Cell(35, 6, "Fund Cluster:", 0, 0, 'L');
+$pdf->SetFont('helvetica', 'U', 10);
+$pdf->Cell(75, 6, $fundCluster, 0, 0, 'L');
+$pdf->SetFont('helvetica', '', 10);
+
+$pdf->Cell(55, 6, "PAR No.:", 0, 0, 'R');
+$pdf->SetFont('helvetica', 'U', 10);
+$pdf->Cell(25, 6, $ics_no, 0, 1, 'R');
+$pdf->SetFont('helvetica', '', 10);
+
+$pdf->Ln(5);
+
+// Header table settings
+$pdf->SetFont('helvetica', 'B', 8);
+$tableWidth = 210;  // Total width of the table (leaving margins)
+$signWidth = $tableWidth;
+
+$col1Width = $tableWidth * 0.10;  // 10% for Quantity
+$col2Width = $tableWidth * 0.10;  // 10% for Unit
+$col3Width = $tableWidth * 0.25;  // 25% for Amount (total width for the merged columns)
+$col4Width = $tableWidth * 0.25;  // 20% for Description
+$col5Width = $tableWidth * 0.15;  // 15% for Inventory Item No.
+$col6Width = $tableWidth * 0.15;  // 15% for Estimated Useful Life
+
+// First row (main headers)
+$pdf->SetX(($pdf->GetPageWidth() - $tableWidth) / 2);  // Center position
+$pdf->Cell($col1Width, 12, "Quantity", 1, 0, 'C');
+$pdf->Cell($col2Width, 12, "Unit", 1, 0, 'C');
+$pdf->Cell($col3Width, 6, "Amount", 'LRTB', 0, 'C');
+$pdf->Cell($col4Width, 12, "Description", 1, 0, 'C');
+$pdf->Cell($col5Width, 12, "Inventory Item No.", 1, 0, 'C');
+$pdf->Cell($col6Width, 12, "Estimated Useful Life", 1, 1, 'C');
+
+// Second row (sub-headers under Amount)
+$pdf->SetX(($pdf->GetPageWidth() - $tableWidth) / 2);  // Reset to the "Amount" column start position
+$pdf->Cell($col1Width, 6, "", 0, 0, 'C');  // Empty cell to align with "Quantity" and "Unit"
+$pdf->Cell($col2Width, 6, "", 0, 0, 'C');  // Empty cell to align with "Quantity" and "Unit"
+
+$pdf->SetXY(45, 53);  // Set the X and Y to align the "Unit Cost" and "Total Cost" cells
+$pdf->Cell($col3Width * 0.5, 6, "Unit Cost", 1, 0, 'C');
+$pdf->Cell($col3Width * 0.5, 6, "Total Cost", 1, 1, 'C');
+
+// Populate table rows
+$pdf->SetFont('helvetica', '', 8);
+$totalAmount = 0;
+
+foreach ($data as $row) {
+    $totalAmount += $row['total_cost'];
+    $pdf->SetX(($pdf->GetPageWidth() - $tableWidth) / 2);  // Center position
+    $pdf->Cell(21, 8, $row['qty'], 'LR', 0, 'C');
+    $pdf->Cell(21, 8, $row['unit'], 'LR', 0, 'C');
+    $pdf->Cell(26.3, 8, number_format($row['unit_cost'], 2), 'LR', 0, 'C');
+    $pdf->Cell(26.2, 8, number_format($row['total_cost'], 2), 'LR', 0, 'C');
+    $pdf->Cell(52.5, 8, $row['desc'], 'LR', 0, 'C');
+    $pdf->Cell(31.5, 8, $row['item_no'], 'LR', 0, 'C');
+    $pdf->Cell(31.5, 8, $row['estimate'], 'LR', 0, 'C');
+    $pdf->Cell(26.3, 8, number_format($row['total_cost'], 2), 'LR', 1, 'C');
 }
- 
 
-// Create a new PDF document
-$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+$pdf->SetX(3);
+$pdf->Cell(21, 165, '', 'LRB', 0, 'C');
+$pdf->Cell(21, 165, '', 'RB', 0, 'C');
+$pdf->Cell(26.25, 165, '', 'RB', 0, 'C');
+$pdf->Cell(26.25, 165, '', 'RB', 0, 'C');
+$pdf->Cell(52.45, 165, '', 'RB', 0, 'C');
+$pdf->Cell(31.55, 165, '', 'RB', 0, 'C');
+$pdf->Cell(31.55, 165, '', 'RB', 0, 'C');
 
-// Set document information
-$pdf->SetCreator(PDF_CREATOR);
-$pdf->SetAuthor('Your Name');
-$pdf->SetTitle('NEMSU-SUPTRACK');
-$pdf->SetSubject('TCPDF Tutorial');
-$pdf->SetKeywords('TCPDF, PDF, table, example, guide');
+$pdf->Ln(160);
+$pdf->Cell(165, 0, number_format($totalAmount, 2), 0, 0, 'C');
 
-// Set default header and footer
-$pdf->setPrintHeader(false);
-$pdf->setPrintFooter(false);
+$pdf->Ln(5);
+$pdf->SetX(($pdf->GetPageWidth() - $signWidth) / 2);  // Center position
+$pdf->Cell(94.5, 55, "", 'LRB', 0, 'L');
+$pdf->Cell(115.5, 55, "", 'LRB', 0, 'L');
 
-// Set margins
-$pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+$pdf->SetXY(5,245);
+$pdf->Cell(90, 20, "Receive from:", 0, 0, 'L');
 
-// Set auto page breaks
-$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+$pdf->SetXY(20,265);
+$pdf->Cell(90, 6, "___________________________________", 0, 0, 'L');
 
-// Set font
-$pdf->SetFont('helvetica', '', 12);
+$pdf->SetXY(30,265);
+$pdf->Cell(120, 6, $receive_by, 0, 0, 'L');
 
-// Add a page
-$pdf->AddPage();
+$pdf->SetXY(21.5,270);
+$pdf->Cell(120, 6, "Signature over Printed Name of End User", 0, 0, 'L');
 
-// Add header
-$pdf->SetFont('helvetica', 'B', 14);
-$pdf->Cell(0, 10, 'INVENTORY CUSTODIAN SLIP (ICS)', 0, 1, 'C');
-$pdf->Ln(5); // Add some space
+$pdf->SetFont('helvetica', 'U', 8);
+$pdf->SetXY(35,275);
+$pdf->Cell(120, 6, "$role1", 0, 0, 'L');
+$pdf->SetFont('helvetica', '', 8);
+$pdf->SetXY(36,280);
+$pdf->Cell(120, 6, "$date_file", 0, 0, 'L');
 
-// Add entity details
-$pdf->SetFont('helvetica', '', 12);
-$pdf->Cell(50, 10, 'Entity Name:', 0, 0);
-$pdf->SetFont('helvetica', 'B', 12);
-$pdf->Cell(100, 10, $entity_name, 0, 1);
 
-$pdf->SetFont('helvetica', '', 12);
-$pdf->Cell(50, 10, 'Fund Cluster:', 0, 0); // Fund Cluster label
-$pdf->SetFont('helvetica', 'B', 12);
-$pdf->Cell(50, 10, $fund_cluster, 0, 0); // Fund Cluster value
+// Receive By Signature
+$pdf->SetXY(105,245);
+$pdf->Cell(90, 20, "Receive by:", 0, 0, 'L');
 
-$pdf->SetX(120); // Move to the right for PAR No.
-$pdf->SetFont('helvetica', '', 12);
-$pdf->Cell(30, 10, 'PAR No.:', 0, 0); // PAR No. label
-$pdf->SetFont('helvetica', 'B', 12);
-$pdf->Cell(50, 10, $ics_no, 0, 1); // PAR No. value
+$pdf->SetXY(130,265);
+$pdf->Cell(90, 6, "___________________________________", 0, 0, 'L');
 
-$pdf->Ln(5); // Add some space
+$pdf->SetXY(140,265);
+$pdf->Cell(120, 6, $issue_by, 0, 0, 'L');
 
-// Define the table content
-$html = '
-<table border="1" cellpadding="7">
-    <thead>
-        <tr>
-            <th style="background-color:#f2f2f2;text-align: center;">Quantity</th>
-            <th style="background-color:#f2f2f2;text-align: center;">Unit</th>
-            <th style="background-color:#f2f2f2;text-align: center;">Unit Cost</th>
-            <th style="background-color:#f2f2f2;text-align: center;">Total Cost</th>
-            <th style="background-color:#f2f2f2;text-align: center;">Description</th>
-            <th style="background-color:#f2f2f2;text-align: center;">Inventory Item No.</th>
-            <th style="background-color:#f2f2f2;text-align: center;">Estimated Useful Life</th>
-        </tr>
-    </thead>
-    <tbody>
-        ' . $rows . '
-        <tr>
-            <td colspan="7" style="text-align: right;">Total: '.$total_sum.'.00</td>
-        </tr>
-        <tr>
-            <td colspan="3">Received by:<br><br><br>
-                <div style="text-align: center;">
-                    <span style="text-decoration: underline; text-decoration-thickness: 3px;">'.$receive_by.'</span><br>
-                    Signature over Printed Name of End User<br>
-                    '.$role1.'<br>
-                    Position/Office<br>
-                    '.$date_file.'<br>
-                    Date
-                </div>
-            </td>
-            <td colspan="4">Issued by:<br><br><br>
-                <div style="text-align: center;">
-                    <span style="text-decoration: underline; text-decoration-thickness: 3px;">'.$issue_by.'</span><br>
-                    Signature over Printed Name of End User<br>
-                    '.$role2.'<br>
-                    Position/Office<br>
-                    '.$date_file.'<br>
-                    Date
-                </div>
-            </td>
-        </tr>
-    </tbody>
-</table>
-';
+$pdf->SetXY(137,270);
+$pdf->Cell(120, 6, "Signature over Printed Name", 0, 0, 'L');
 
-// Output the table using writeHTML
-$pdf->writeHTML($html, true, false, true, false, '');
+$pdf->SetFont('helvetica', 'U', 8);
+$pdf->SetXY(142,275);
+$pdf->Cell(120, 6, "$role2", 0, 0, 'L');
+$pdf->SetFont('helvetica', '', 8);
+$pdf->SetXY(145,280);
+$pdf->Cell(120, 6, "$date_file", 0, 0, 'L');
 
-// Close and output the PDF document
-$pdf->Output('example_table.pdf', 'I');
+$pdf->Output('property_acknowledgment_receipt_static.pdf', 'I');
 ?>
