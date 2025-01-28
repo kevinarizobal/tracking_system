@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<?php include('link/header.php');?>
+    <?php include('link/header.php'); ?>
 </head>
 <body>
-<?php include('link/navbar.php');?>
+<?php include('link/navbar.php'); ?>
 <div class="container-fluid" id="main-content">
     <div class="row">
         <div class="col-lg-10 ms-auto p-4 overflow-hidden">
             <div class="d-flex align-items-center justify-content-between mb-4">
-                <h3>PROPERTY ACKNOWLDEMENT RECEIPT (PAR)</h3>
+                <h3>PROPERTY ACKNOWLEDGEMENT RECEIPT (PAR)</h3>
             </div>
             <div class="card">
                 <div class="card-body">
@@ -32,10 +32,16 @@
                         <tbody>
                         <?php
                             include('config.php');
-                            $num = 1;
-                            $sql = "SELECT * FROM par_tb";
+                            $sql = "
+                                SELECT * FROM par_tb 
+                                WHERE id IN (
+                                    SELECT MIN(id)
+                                    FROM par_tb
+                                    GROUP BY property_number
+                                )
+                            ";
                             $result = $conn->query($sql);
-                            while($row = $result->fetch_assoc()) {
+                            while ($row = $result->fetch_assoc()) {
                                 echo "<tr>
                                         <td>{$row['par_no']}</td>
                                         <td>{$row['qty']}</td>
@@ -45,6 +51,7 @@
                                         <td>{$row['amount']}</td>
                                         <td>{$row['date_file']}</td>
                                         <td>
+                                            <button class='btn btn-info btn-sm view-btn' data-id='{$row['id']}'><i class='bi bi-eye'></i></button>
                                             <a href='print_par.php?id={$row['property_number']}' target='_blank' class='btn btn-success btn-sm'><i class='bi bi-printer'></i></a>
                                             <a href='update_par.php?id={$row['id']}' class='btn btn-primary btn-sm'><i class='bi bi-pencil-square'></i></a>
                                             <a href='delete_par.php?id={$row['id']}' class='btn btn-danger btn-sm'><i class='bi bi-trash'></i></a>
@@ -60,6 +67,7 @@
     </div>
 </div>
 
+<!-- Add Modal -->
 <div class="modal fade" id="crudModal" tabindex="-1" aria-labelledby="crudModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -133,44 +141,103 @@
     </div>
 </div>
 
+<!-- View Modal -->
+<div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="viewModalLabel">View PAR Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Quantity</th>
+                            <th>Unit</th>
+                            <th>Description</th>
+                            <th>Amount</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="related-items">
+                        <tr>
+                            <td colspan="4">No related items found.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-md5/2.19.0/js/md5.min.js"></script>
 <script>
     $(document).ready(function () {
         $('#crud-table').DataTable();
-        // Fetch and display records
-        function fetchData() {
-        $.get('fetch_data_par.php', function (data) {
-            try {
-                const records = JSON.parse(data);
-                const table = $('#crud-table').DataTable();
-                table.clear(); // Clear the table before adding new data
-                
-                // Populate table with the fetched records
-                records.forEach(record => {
-                    table.row.add([
-                        record.id,
-                        record.entity_name,
-                        record.fund_cluster,
-                        record.par_no,
-                        record.date_acquired,
-                        record.amount,
-                        `
-                        <button class="btn btn-warning btn-sm edit-btn" data-id="${record.id}">Edit</button>
-                        <button class="btn btn-danger btn-sm delete-btn" data-id="${record.id}">Delete</button>
-                        `
-                    ]).draw();
-                });
-            } catch (error) {
-                console.error("Error parsing data:", error);
-            }
-        }).fail(function () {
-            alert('Error occurred while fetching data!');
-        });
-    }
 
+        // Handle "View" button click
+        $(document).on('click', '.view-btn', function () {
+            const id = $(this).data('id');
+            $('#viewModal').modal('show');
+
+            // Fetch details
+            $.ajax({
+                type: 'GET',
+                url: `fetch_par_details.php?id=${id}`,
+                success: function (data) {
+                    const details = JSON.parse(data);
+                    const detailsHTML = `
+                        <p><strong>PAR No:</strong> ${details.par_no}</p>
+                        <p><strong>Quantity:</strong> ${details.qty}</p>
+                        <p><strong>Unit:</strong> ${details.unit}</p>
+                        <p><strong>Description:</strong> ${details.description}</p>
+                        <p><strong>Property Number:</strong> ${details.property_number}</p>
+                        <p><strong>Amount:</strong> ${details.amount}</p>
+                        <p><strong>Date Filed:</strong> ${details.date_file}</p>
+                    `;
+                    $('#view-par-details').html(detailsHTML);
+
+                    // Fetch related items
+                    fetchRelatedItems(details.property_number);
+                },
+                error: function () {
+                    $('#view-par-details').html('<p>Error fetching details.</p>');
+                }
+            });
+        });
+
+        function fetchRelatedItems(propertyNumber) {
+            $.ajax({
+                type: 'GET',
+                url: `fetch_related_items.php?property_number=${propertyNumber}`,
+                success: function (data) {
+                    const items = JSON.parse(data);
+                    const relatedItemsHTML = items.map(item => {
+                        console.log('Item ID:', item.id);  // Log the ID to the console
+                        return `
+                            <tr>
+                                <td>${item.qty}</td>
+                                <td>${item.unit}</td>
+                                <td>${item.description}</td>
+                                <td>${item.amount}</td>
+                                <td>
+                                    <a href="update_par.php?id=${item.id}" class="btn btn-primary btn-sm"><i class="bi bi-pencil-square"></i></a>
+                                    <a href="delete_par.php?id=${item.id}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this item?')"><i class="bi bi-trash"></i></a>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                    $('#related-items').html(relatedItemsHTML);
+                },
+
+                error: function () {
+                    $('#related-items').html('<tr><td colspan="5">Error fetching related items.</td></tr>');
+                }
+            });
+        }
 
         // Add dynamic fields
         $('#add-field').click(function () {
@@ -218,6 +285,7 @@
                 }
             });
         });
+
     });
 </script>
 </body>
