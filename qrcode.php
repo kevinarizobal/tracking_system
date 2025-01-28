@@ -12,14 +12,6 @@ if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
 <?php
 include('config.php');
 
-// Generate random Property No and Serial No
-$random_property_id = rand(100, 999);  // Generates a random property number between 100 and 999
-$random_serial_id = rand(100, 999);  // Generates a random serial number between 100 and 999
-
-// Format Property No and Serial No with prefixes and leading zeros
-$formatted_property_id = "PN-" . str_pad($random_property_id, 3, "0", STR_PAD_LEFT);
-$formatted_serial_id = "SN-" . str_pad($random_serial_id, 3, "0", STR_PAD_LEFT);
-
 if(isset($_POST['save'])){
     $serial_id = $_POST['serial_id'];
     $property_id = $_POST['property_id'];
@@ -160,11 +152,11 @@ if(isset($_GET['delete'])){
                 </div>
                 <div class="col-lg-4 mb-1">
                     <label class="form-label" style="font-weight: 500;">Property No.</label>
-                    <input type="text" id="propid" name="property_id" value="<?php echo $formatted_property_id; ?>" class="form-control" readonly>
+                    <input type="text" id="propid" name="property_id" class="form-control" required>
                 </div>
                 <div class="col-lg-4 mb-1">
                     <label class="form-label" style="font-weight: 500;">Serial No.</label>
-                    <input type="text" id="qrdata" name="serial_id" value="<?php echo $formatted_serial_id; ?>" class="form-control" readonly>
+                    <input type="text" id="qrdata" name="serial_id" class="form-control" required>
                 </div>
                 <div class="col-lg-4 mb-1">
                     <div class="form-check">
