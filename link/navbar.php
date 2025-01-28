@@ -5,6 +5,7 @@ if(isset($_SESSION['login']) && $_SESSION['login'] == true) {
 }
 ?>
 
+
 <nav class="navbar navbar-expand-lg navbar-light bg-primary sticky-top">
   <div class="container-fluid text-dark p-2 d-flex align-items-center justify-content-between">
     <a class="navbar-brand text-dark d-flex align-items-center" href="#">
@@ -12,8 +13,25 @@ if(isset($_SESSION['login']) && $_SESSION['login'] == true) {
       <h3 class="ms-2 mb-0 text-white" style="font-size: 1.5rem;">NEMSU CANTILAN SUPTRACK</h3>
     </a>
     <form class="d-flex">
-       <a href="logout.php" class="btn btn-outline-light">Logout</a>
+        <?php
+            if (isset($_SESSION['login']) && $_SESSION['login'] == true) {
+                $name = htmlspecialchars($_SESSION['Name'], ENT_QUOTES, 'UTF-8'); // Prevent XSS
+                echo <<<HTML
+                <button type="button" class="btn btn-outline-light shadow-none dropdown-toggle" 
+                        id="navbarDropdownMenuLink" data-bs-toggle="dropdown" data-bs-display="static" 
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    $name
+                </button>
+                <ul class="dropdown-menu dropdown-menu-lg-end" aria-labelledby="navbarDropdownMenuLink">
+                    <li><a class="dropdown-item" href="logout.php">Logout</a></li>
+                </ul>
+    HTML;
+            } else {
+                echo '<a href="login.php" class="btn btn-outline-light">Login</a>';
+            }
+        ?>
     </form>
+
   </div>
 </nav>
 
