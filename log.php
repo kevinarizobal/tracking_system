@@ -85,7 +85,7 @@ $result = $conn->query($sql);
     <div class="row">
         <div class="col-lg-10 ms-auto p-4 overflow-hidden">
             <div class="d-flex align-items-center justify-content-between mb-4">
-                <h3>User Management</h3>
+                <h3>System Log History</h3>
             </div>
             <div class="card">
                 <div class="card-body">
