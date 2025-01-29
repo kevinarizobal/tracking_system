@@ -7,33 +7,45 @@ if(isset($_SESSION['login']) && $_SESSION['login'] == true) {
 
 
 <nav class="navbar navbar-expand-lg navbar-light bg-primary sticky-top">
-  <div class="container-fluid text-dark p-2 d-flex align-items-center justify-content-between">
-    <a class="navbar-brand text-dark d-flex align-items-center" href="#">
-      <img src="image/2.png" class="img-fluid shadow-1" style="max-height: 50px;" alt="Logo">
-      <h3 class="ms-2 mb-0 text-white" style="font-size: 1.5rem;">NEMSU CANTILAN SUPTRACK</h3>
+  <div class="container-fluid">
+    <a class="navbar-brand text-dark d-flex align-items-center">
+        <img src="image/2.png" class="img-fluid shadow-1" style="max-height: 50px;" alt="Logo">
+        <h3 class="ms-2 mb-0 text-white" style="font-size: 1.5rem;">NEMSU CANTILAN SUPTRACK</h3>
     </a>
     <form class="d-flex">
         <?php
             if (isset($_SESSION['login']) && $_SESSION['login'] == true) {
-                $name = htmlspecialchars($_SESSION['Name'], ENT_QUOTES, 'UTF-8'); // Prevent XSS
-                echo <<<HTML
-                <button type="button" class="btn btn-outline-light shadow-none dropdown-toggle" 
-                        id="navbarDropdownMenuLink" data-bs-toggle="dropdown" data-bs-display="static" 
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    $name
+        ?>
+            <div class="dropdown">
+                <button class="btn btn-outline-light shadow-none nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <?=$_SESSION['Name'];?>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-lg-end" aria-labelledby="navbarDropdownMenuLink">
                     <li><a class="dropdown-item" href="logout.php">Logout</a></li>
                 </ul>
-    HTML;
-            } else {
-                echo '<a href="login.php" class="btn btn-outline-light">Login</a>';
-            }
+            </div>
+        <?php
+            } 
         ?>
     </form>
-
   </div>
 </nav>
+
+<style>
+    .dropdown-menu {
+        margin-top: 0; /* Remove extra top margin */
+        margin-left: -1rem; /* Adjust the position to the left if needed */
+    }
+
+    .dropdown-toggle {
+        padding: 0.5rem 1rem; /* Medium padding for button */
+        font-size: 1.125rem; /* Medium font size */
+        border-radius: 0.375rem; /* Optional: rounded corners */
+    }
+</style>
+
+
+
 
 <div class="col-lg-2 bg-primary border-top border-3 border-light" id="dashboard-menu">
     <nav class="navbar navbar-expand-lg navbar-dark">
