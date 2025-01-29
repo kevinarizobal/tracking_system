@@ -1,3 +1,14 @@
+<?php
+include('config.php');
+session_start();
+
+// Check if the user is logged in
+if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
+    // Redirect to login page if not logged in
+    header("Location: index.php");
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -31,8 +42,14 @@
                         <tbody>
                         <?php
                             include('config.php');
-                            $num = 1;
-                            $sql = "SELECT * FROM ics_tb";
+                            $sql = "
+                                SELECT * FROM ics_tb 
+                                WHERE id IN (
+                                    SELECT MIN(id)
+                                    FROM ics_tb
+                                    GROUP BY item_no
+                                )
+                            ";
                             $result = $conn->query($sql);
                             while($row = $result->fetch_assoc()) {
                                 echo "<tr>
@@ -43,6 +60,7 @@
                                         <td>{$row['item_no']}</td>
                                         <td>{$row['date_file']}</td>
                                         <td>
+                                            <button class='btn btn-info btn-sm view-btn' data-id='{$row['id']}'><i class='bi bi-eye'></i></button>
                                             <a href='print_ics.php?id={$row['item_no']}' target='_blank' class='btn btn-success btn-sm'><i class='bi bi-printer'></i></a>
                                             <a href='update_ics.php?id={$row['id']}' class='btn btn-primary btn-sm'><i class='bi bi-pencil-square'></i></a>
                                             <a href='delete_ics.php?id={$row['id']}' class='btn btn-danger btn-sm'><i class='bi bi-trash'></i></a>
@@ -142,6 +160,35 @@
     </div>
 </div>
 
+
+ <!-- Modal for Viewing Details -->
+ <div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewModalLabel">ICS Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Qty</th>
+                                <th>Unit</th>
+                                <th>Description</th>
+                                <th>Amount</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="related-items">
+                            <!-- Related items will be dynamically loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
@@ -230,6 +277,74 @@
                 }
             });
         });
+
+        // Handle "View" button click
+        $(document).on('click', '.view-btn', function () {
+            const id = $(this).data('id');
+            $('#viewModal').modal('show');
+
+            // Fetch details
+            $.ajax({
+                type: 'GET',
+                url: `fetch_ics_details.php?id=${id}`,
+                success: function (data) {
+                    try {
+                        const details = JSON.parse(data);
+                        const detailsHTML = `
+                            <p><strong>ICS No:</strong> ${details.ics_no}</p>
+                            <p><strong>Quantity:</strong> ${details.qty}</p>
+                            <p><strong>Unit:</strong> ${details.unit}</p>
+                            <p><strong>Description:</strong> ${details.description}</p>
+                            <p><strong>Inventory Number:</strong> ${details.item_no}</p>
+                            <p><strong>Date Filed:</strong> ${details.date_file}</p>
+                        `;
+                        $('#view-par-details').html(detailsHTML);
+
+                        // Fetch related items
+                        fetchRelatedItems(details.item_no);
+                    } catch (error) {
+                        $('#view-par-details').html('<p>Error parsing data.</p>');
+                        console.error("Parsing error:", error);
+                    }
+                },
+                error: function () {
+                    $('#view-par-details').html('<p>Error fetching details.</p>');
+                }
+            });
+        });
+
+        function fetchRelatedItems(itemNo) {
+            $.ajax({
+                type: 'GET',
+                url: `fetch_related_ics_items.php?item_no=${itemNo}`,
+                success: function (data) {
+                    try {
+                        const items = JSON.parse(data);
+                        const relatedItemsHTML = items.map(item => `
+                            <tr>
+                                <td>${item.qty}</td>
+                                <td>${item.unit}</td>
+                                <td>${item.description}</td>
+                                <td>${item.total_cost}</td>
+                                <td>
+                                    <a href="update_ics.php?id=${item.id}" class="btn btn-primary btn-sm"><i class="bi bi-pencil-square"></i></a>
+                                    <a href="delete_ics.php?id=${item.id}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this item?')"><i class="bi bi-trash"></i></a>
+                                </td>
+                            </tr>
+                        `).join('');
+                        $('#related-items').html(relatedItemsHTML);
+                    } catch (error) {
+                        $('#related-items').html('<tr><td colspan="5">Error parsing related items.</td></tr>');
+                        console.error("Parsing error:", error);
+                    }
+                },
+                error: function () {
+                    $('#related-items').html('<tr><td colspan="5">Error fetching related items.</td></tr>');
+                }
+            });
+        }
+
+
     });
 </script>
 </body>
