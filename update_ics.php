@@ -1,5 +1,17 @@
 <?php
+
+session_start();
+
+// Check if the user is logged in
+if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
+    // Redirect to login page if not logged in
+    header("Location: index.php");
+    exit();
+}
+
 include('config.php');
+
+
 
 // Get the ID from the URL
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
