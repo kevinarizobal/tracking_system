@@ -62,11 +62,11 @@ if(isset($_SESSION['login']) && $_SESSION['login'] == true) {
                     </li>
 
                     <li class="nav-item">
-                        <button class="btn text-white px-3 w-100 shadow-none text-start d-flex align-items-center justify-content-between" type="button" data-bs-toggle="collapse" data-bs-target="#transactionLinks">
+                        <button class="btn text-white px-3 w-100 shadow-none text-start d-flex align-items-center justify-content-between" type="button" data-bs-toggle="collapse" data-bs-target="#forms">
                             <span><i class="bi bi-archive"></i>&nbsp;Office File</span>
                             <span><i class="bi bi-caret-down-fill"></i></span>
                         </button>
-                        <div class="collapse show px-3 small mb-1" id="transactionLinks">
+                        <div class="collapse show px-3 small mb-1" id="forms">
                             <ul class="nav nav-pills flex-column rounded border border-light">
                                 <li class="nav-item">
                                     <a class="nav-link text-white" href="ics.php"><i class="bi bi-file-earmark-bar-graph"></i>&nbsp;Inventory | ICS</a> 
@@ -79,11 +79,11 @@ if(isset($_SESSION['login']) && $_SESSION['login'] == true) {
                     </li>
 
                     <li class="nav-item">
-                        <button class="btn text-white px-3 w-100 shadow-none text-start d-flex align-items-center justify-content-between" type="button" data-bs-toggle="collapse" data-bs-target="#transactionLinks">
+                        <button class="btn text-white px-3 w-100 shadow-none text-start d-flex align-items-center justify-content-between" type="button" data-bs-toggle="collapse" data-bs-target="#qr">
                             <span><i class="bi bi-qr-code-scan"></i>&nbsp;QR Code</span>
                             <span><i class="bi bi-caret-down-fill"></i></span>
                         </button>
-                        <div class="collapse show px-3 small mb-1" id="transactionLinks">
+                        <div class="collapse show px-3 small mb-1" id="qr">
                             <ul class="nav nav-pills flex-column rounded border border-light">
                                 <?php if (isset($role) && $role == 'Admin') : ?>
                                     <li class="nav-item">
