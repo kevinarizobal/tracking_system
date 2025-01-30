@@ -52,7 +52,9 @@ if ($result->num_rows > 0) {
         $received_by = $row['received_by'];
         $issued_by = $row['issued_by'];
         $position = $row['position'];
-        $date_file = $row['date_file'];
+        $receive_date = $row['receive_date'];
+        $issue_date = $row['issue_date'];
+        $position2 = $row['position2'];
     }
 } else {
     die("No records found.");
@@ -144,11 +146,11 @@ $pdf->Cell(75, 6, "Signature over Printed Name of Supply/Property Custodian", 'L
 
 $pdf->SetX(($pdf->GetPageWidth() - $signWidth) / 2);  // Center position
 $pdf->Cell(115, 6, "$position", 'LR', 0, 'C');
-$pdf->Cell(75, 6, "AOI/Supply Officer", 'LR', 1, 'C');
+$pdf->Cell(75, 6, "$position2", 'LR', 1, 'C');
 
 $pdf->SetX(($pdf->GetPageWidth() - $signWidth) / 2);  // Center position
-$pdf->Cell(115, 6, "$date_file", 'LRB', 0, 'C');
-$pdf->Cell(75, 6, "$date_file", 'LRB', 1, 'C');
+$pdf->Cell(115, 6, "$receive_date", 'LRB', 0, 'C');
+$pdf->Cell(75, 6, "$issue_date", 'LRB', 1, 'C');
 
 // Output PDF
 $pdf->Output('property_acknowledgment_receipt.pdf', 'I');
