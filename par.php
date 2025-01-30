@@ -1,3 +1,14 @@
+<?php
+include('config.php');
+session_start();
+
+// Check if the user is logged in
+if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
+    // Redirect to login page if not logged in
+    header("Location: index.php");
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,19 +30,25 @@
                     <table class="table table-responsive mt-4" id="crud-table">
                         <thead>
                             <tr>
+                                <th>No.</th>
+                                <th>Name</th>
+                                <th>Fund Cluster</th>
                                 <th>PAR No.</th>
-                                <th>Quantity</th>
-                                <th>Unit</th>
-                                <th>Description</th>
-                                <th>Property Number</th>
                                 <th>Amount</th>
-                                <th>Date Filed</th>
+                                <th>Received By</th>
+                                <th>Position/Office</th>
+                                <th>Date Received</th>
+                                <th>Issued By</th>
+                                <th>Position/Office</th>
+                                <th>Date Issued</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
                         <?php
                             include('config.php');
+                            $i = 1;
+                            $totalAmount = 0;
                             $sql = "
                                 SELECT * FROM par_tb 
                                 WHERE id IN (
@@ -42,14 +59,19 @@
                             ";
                             $result = $conn->query($sql);
                             while ($row = $result->fetch_assoc()) {
+                                $no = $i++;
                                 echo "<tr>
+                                        <td>{$no}</td>
+                                        <td>{$row['entity_name']}</td>
+                                        <td>{$row['fund_cluster']}</td>
                                         <td>{$row['par_no']}</td>
-                                        <td>{$row['qty']}</td>
-                                        <td>{$row['unit']}</td>
-                                        <td>{$row['description']}</td>
-                                        <td>{$row['property_number']}</td>
                                         <td>{$row['amount']}</td>
-                                        <td>{$row['date_file']}</td>
+                                        <td>{$row['received_by']}</td>
+                                        <td>{$row['position']}</td>
+                                        <td>{$row['receive_date']}</td>
+                                        <td>{$row['issued_by']}</td>
+                                        <td>{$row['position2']}</td>
+                                        <td>{$row['issue_date']}</td>
                                         <td>
                                             <button class='btn btn-info btn-sm view-btn' data-id='{$row['id']}'><i class='bi bi-eye'></i></button>
                                             <a href='print_par.php?id={$row['property_number']}' target='_blank' class='btn btn-success btn-sm'><i class='bi bi-printer'></i></a>
@@ -78,56 +100,66 @@
             <div class="modal-body">
                 <form id="crud-form">
                     <div class="row">
-                        <div class="col-lg-6 mb-3">
+                        <div class="col-4 mb-3">
                             <label for="entity" class="form-label">Entity</label>
-                            <input type="text" class="form-control" id="entity" name="entity" required>
+                            <input type="text" class="form-control" id="entity" name="entity" value="NEMSU Cantilan Campus" readonly>
                         </div>
-                        <div class="col-lg-6 mb-3">
+                        <div class="col-4 mb-3">
                             <label for="fund-cluster" class="form-label">Fund Cluster</label>
                             <input type="text" class="form-control" id="fund-cluster" name="fund-cluster" required>
                         </div>
-                        <div class="col-lg-6 mb-3">
+                        <div class="col-4 mb-3">
                             <label for="par-no" class="form-label">PAR No</label>
                             <input type="text" class="form-control" id="par-no" name="par-no" required>
                         </div>
-                        <div class="col-lg-6 mb-3">
-                            <label for="date-acquired" class="form-label">Date Acquired</label>
-                            <input type="date" class="form-control" name="date-acquired" required>
-                        </div>
-                        <div class="col-lg-6 mb-3">
-                            <label for="property-number" class="form-label">Property</label>
-                            <input type="text" class="form-control mb-2" name="property-number" placeholder="Property Number" required>
-                        </div>
-                        <div class="col-lg-6 mb-3">
+                        <div class="col-4 mb-3">
                             <label for="received-by" class="form-label">Received By</label>
                             <input type="text" class="form-control" id="received-by" name="received-by" required>
                         </div>
-                        <div class="col-lg-6 mb-3">
+                        <div class="col-4 mb-3">
                             <label for="position" class="form-label">Position/Office</label>
                             <input type="text" class="form-control" id="position" name="position" required>
                         </div>
-                        <div class="col-lg-6 mb-3">
+                        <div class="col-4 mb-3">
+                            <label for="receive-date" class="form-label">Received Date</label>
+                            <input type="date" class="form-control" id="receive-date" name="receive-date" required>
+                        </div>
+                        <div class="col-4 mb-3">
                             <label for="issued-by" class="form-label">Issued By</label>
                             <input type="text" class="form-control" id="issued-by" name="issued-by" required>
+                        </div>
+                        <div class="col-4 mb-3">
+                            <label for="position2" class="form-label">Position/Office</label>
+                            <input type="text" class="form-control" id="position2" name="position2" required>
+                        </div>
+                        <div class="col-4 mb-3">
+                            <label for="issue-date" class="form-label">Issued Date</label>
+                            <input type="date" class="form-control" id="issue-date" name="issue-date" required>
                         </div>
                     </div>
                     <div id="dynamic-fields">
                         <h5>Items</h5>
                         <div class="dynamic-field mb-3">
                             <div class="row">
-                                <div class="col-lg-1">
+                                <div class="col-1">
                                     <input type="text" class="form-control mb-2" name="quantity[]" placeholder="Qty" required>
                                 </div>
-                                <div class="col-lg-1">
+                                <div class="col-1">
                                     <input type="text" class="form-control mb-2" name="unit[]" placeholder="Unit" required>
                                 </div>
-                                <div class="col-lg-4">
+                                <div class="col-2">
                                     <input type="text" class="form-control mb-2" name="description[]" placeholder="Description" required>
                                 </div>
-                                <div class="col-lg-2">
+                                <div class="col-2">
+                                    <input type="text" class="form-control mb-2" name="property-number[]" placeholder="Property No" required>
+                                </div>
+                                <div class="col-2">
+                                    <input type="date" class="form-control mb-2" name="date-acquired[]" placeholder="Date Acquired" required>
+                                </div>
+                                <div class="col-2">
                                     <input type="number" class="form-control mb-2" name="amount[]" placeholder="Amount" required>
                                 </div>
-                                <div class="col-lg-2">
+                                <div class="col-lg-1">
                                     <button type="button" class="btn btn-danger removeField">Remove</button>
                                 </div>
                             </div>
@@ -153,9 +185,11 @@
                 <table class="table table-bordered">
                     <thead>
                         <tr>
-                            <th>Quantity</th>
+                            <th>Qty</th>
                             <th>Unit</th>
                             <th>Description</th>
+                            <th>Property No</th>
+                            <th>Date Acquired</th>
                             <th>Amount</th>
                             <th>Action</th>
                         </tr>
@@ -222,6 +256,8 @@
                                 <td>${item.qty}</td>
                                 <td>${item.unit}</td>
                                 <td>${item.description}</td>
+                                <td>${item.property_number}</td>
+                                <td>${item.date_acquired}</td>
                                 <td>${item.amount}</td>
                                 <td>
                                     <a href="update_par.php?id=${item.id}" class="btn btn-primary btn-sm"><i class="bi bi-pencil-square"></i></a>
@@ -244,19 +280,25 @@
             const fieldHTML = `
                 <div class="dynamic-field mb-3">
                     <div class="row">
-                        <div class="col-lg-1">
+                        <div class="col-1">
                             <input type="text" class="form-control mb-2" name="quantity[]" placeholder="Qty" required>
                         </div>
-                        <div class="col-lg-1">
+                        <div class="col-1">
                             <input type="text" class="form-control mb-2" name="unit[]" placeholder="Unit" required>
                         </div>
-                        <div class="col-lg-4">
+                        <div class="col-2">
                             <input type="text" class="form-control mb-2" name="description[]" placeholder="Description" required>
                         </div>
-                        <div class="col-lg-2">
+                        <div class="col-2">
+                            <input type="text" class="form-control mb-2" name="property-number[]" placeholder="Property No" required>
+                        </div>
+                        <div class="col-2">
+                            <input type="date" class="form-control mb-2" name="date-acquired[]" placeholder="Date Acquired" required>
+                        </div>
+                        <div class="col-2">
                             <input type="number" class="form-control mb-2" name="amount[]" placeholder="Amount" required>
                         </div>
-                        <div class="col-lg-2">
+                        <div class="col-lg-1">
                             <button type="button" class="btn btn-danger removeField">Remove</button>
                         </div>
                     </div>
