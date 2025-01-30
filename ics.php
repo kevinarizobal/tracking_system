@@ -30,18 +30,23 @@ if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
                     <table class="table table-responsive mt-4" id="crud-table">
                         <thead>
                             <tr>
+                                <th>No.</th>
+                                <th>Name</th>
+                                <th>Fund Cluster</th>
                                 <th>ICS No.</th>
-                                <th>Quantity</th>
-                                <th>Unit</th>
-                                <th>Description</th>
-                                <th>Inventory Number</th>
-                                <th>Date Filed</th>
+                                <th>Received From</th>
+                                <th>Position/Office</th>
+                                <th>Received Date</th>
+                                <th>Received By</th>
+                                <th>Position/Office</th>
+                                <th>Received Date</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
                         <?php
                             include('config.php');
+                            $i = 1;
                             $sql = "
                                 SELECT * FROM ics_tb 
                                 WHERE id IN (
@@ -52,13 +57,18 @@ if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
                             ";
                             $result = $conn->query($sql);
                             while($row = $result->fetch_assoc()) {
+                                $no = $i++;
                                 echo "<tr>
+                                        <td>{$no}</td>
+                                        <td>{$row['entity_name']}</td>
+                                        <td>{$row['fund_cluster']}</td>
                                         <td>{$row['ics_no']}</td>
-                                        <td>{$row['qty']}</td>
-                                        <td>{$row['unit']}</td>
-                                        <td>{$row['description']}</td>
-                                        <td>{$row['item_no']}</td>
-                                        <td>{$row['date_file']}</td>
+                                        <td>{$row['receive_by']}</td>
+                                        <td>{$row['role1']}</td>
+                                        <td>{$row['receivefrom_date']}</td>
+                                        <td>{$row['issue_by']}</td>
+                                        <td>{$row['role2']}</td>
+                                        <td>{$row['receiveby_date']}</td>
                                         <td>
                                             <button class='btn btn-info btn-sm view-btn' data-id='{$row['id']}'><i class='bi bi-eye'></i></button>
                                             <a href='print_ics.php?id={$row['item_no']}' target='_blank' class='btn btn-success btn-sm'><i class='bi bi-printer'></i></a>
@@ -86,65 +96,67 @@ if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
             <div class="modal-body">
                 <form id="crud-form">
                     <div class="row">
-                        <div class="col-lg-6 mb-3">
+                        <div class="col-4 mb-3">
                             <label for="entity" class="form-label">Entity</label>
-                            <input type="text" class="form-control" id="entity" name="entity" required>
+                            <input type="text" class="form-control" id="entity" name="entity" value="NEMSU Cantilan Campus" readonly>
                         </div>
-                        <div class="col-lg-6 mb-3">
+                        <div class="col-4 mb-3">
                             <label for="fund-cluster" class="form-label">Fund Cluster</label>
                             <input type="text" class="form-control" id="fund-cluster" name="fund-cluster" required>
                         </div>
-                        <div class="col-lg-3 mb-3">
+                        <div class="col-4 mb-3">
                             <label for="par-no" class="form-label">ICS No</label>
                             <input type="text" class="form-control" id="par-no" name="par-no" required>
                         </div>
-                        <div class="col-lg-3 mb-3">
-                            <label for="item-number" class="form-label">Item Number</label>
-                            <input type="text" class="form-control mb-2" name="item-number" required>
-                        </div>
-                        <div class="col-lg-3 mb-3">
-                            <label for="date-acquired" class="form-label">Date Acquired</label>
-                            <input type="date" class="form-control" name="date-acquired" required>
-                        </div>
-                        <div class="col-lg-3 mb-3">
-                            <label for="estimate" class="form-label">Estimate</label>
-                            <input type="text" class="form-control" name="estimate" required>
-                        </div>
-                        <div class="col-lg-6 mb-3">
+                        <div class="col-4 mb-3">
                             <label for="received-by" class="form-label">Received By</label>
                             <input type="text" class="form-control" id="received-by" name="received-by" required>
                         </div>
-                        <div class="col-lg-6 mb-3">
+                        <div class="col-4 mb-3">
                             <label for="role1" class="form-label">Position/Office</label>
                             <input type="text" class="form-control" id="role1" name="role1" required>
                         </div>
-                        <div class="col-lg-6 mb-3">
+                        <div class="col-4 mb-3">
+                            <label for="received-by" class="form-label">Date Receive</label>
+                            <input type="date" class="form-control" id="receive-date" name="receive-date" required>
+                        </div>
+                        <div class="col-4 mb-3">
                             <label for="issued-by" class="form-label">Issued By</label>
                             <input type="text" class="form-control" id="issued-by" name="issued-by" required>
                         </div>
-                        <div class="col-lg-6 mb-3">
+                        <div class="col-4 mb-3">
                             <label for="role2" class="form-label">Position/Office</label>
                             <input type="text" class="form-control" id="role2" name="role2" required>
+                        </div>
+                        <div class="col-4 mb-3">
+                            <label for="issue-by" class="form-label">Date Receive</label>
+                            <input type="date" class="form-control" id="issue-date" name="issue-date" required>
                         </div>
                     </div>
                     <div id="dynamic-fields">
                         <h5>Items</h5>
                         <div class="dynamic-field mb-3">
                             <div class="row">
-                                <div class="col-lg-1">
+                                <div class="col-1">
                                     <input type="text" class="form-control mb-2" name="quantity[]" placeholder="Qty" required>
                                 </div>
-                                <div class="col-lg-1">
+                                <div class="col-1">
                                     <input type="text" class="form-control mb-2" name="unit[]" placeholder="Unit" required>
                                 </div>
-                                <div class="col-lg-4">
-                                    <input type="text" class="form-control mb-2" name="description[]" placeholder="Description" required>
-                                </div>
-                                <div class="col-lg-2">
+                                <div class="col-1">
                                     <input type="number" class="form-control mb-2" name="cost[]" placeholder="Unit Cost" required>
                                 </div>
-                                <div class="col-lg-2">
-                                    <input type="number" class="form-control mb-2" name="amount[]" placeholder="Total Amount" required>
+                                <div class="col-1">
+                                    <input type="number" class="form-control mb-2" name="amount[]" placeholder="Total Cost" required>
+                                </div>
+                                <div class="col-2">
+                                    <input type="text" class="form-control mb-2" name="description[]" placeholder="Description" required>
+                                </div>
+                                <div class="col-2">
+                                    <input type="text" class="form-control mb-2" name="item-number[]" placeholder="Inventory No" required>
+                                </div>
+                                <div class="col-2">
+                                    <input type="text" class="form-control mb-2" name="estimate[]" placeholder="Estimated Life" required>
                                 </div>
                                 <div class="col-lg-2">
                                     <button type="button" class="btn btn-danger removeField">Remove</button>
@@ -175,8 +187,11 @@ if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
                             <tr>
                                 <th>Qty</th>
                                 <th>Unit</th>
+                                <th>Unit Cost</th>
+                                <th>Total Cost</th>
                                 <th>Description</th>
-                                <th>Amount</th>
+                                <th>Inventory No.</th>
+                                <th>Estimated Life</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -233,20 +248,26 @@ if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
             const fieldHTML = `
                 <div class="dynamic-field mb-3">
                     <div class="row">
-                        <div class="col-lg-1">
+                        <div class="col-1">
                             <input type="text" class="form-control mb-2" name="quantity[]" placeholder="Qty" required>
                         </div>
-                        <div class="col-lg-1">
+                        <div class="col-1">
                             <input type="text" class="form-control mb-2" name="unit[]" placeholder="Unit" required>
                         </div>
-                        <div class="col-lg-4">
-                            <input type="text" class="form-control mb-2" name="description[]" placeholder="Description" required>
-                        </div>
-                        <div class="col-lg-2">
+                        <div class="col-1">
                             <input type="number" class="form-control mb-2" name="cost[]" placeholder="Unit Cost" required>
                         </div>
-                        <div class="col-lg-2">
-                            <input type="number" class="form-control mb-2" name="amount[]" placeholder="Amount" required>
+                        <div class="col-1">
+                            <input type="number" class="form-control mb-2" name="amount[]" placeholder="Total Cost" required>
+                        </div>
+                        <div class="col-2">
+                            <input type="text" class="form-control mb-2" name="description[]" placeholder="Description" required>
+                        </div>
+                        <div class="col-2">
+                            <input type="text" class="form-control mb-2" name="item-number[]" placeholder="Inventory No" required>
+                        </div>
+                        <div class="col-2">
+                            <input type="text" class="form-control mb-2" name="estimate[]" placeholder="Estimated Life" required>
                         </div>
                         <div class="col-lg-2">
                             <button type="button" class="btn btn-danger removeField">Remove</button>
