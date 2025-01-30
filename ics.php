@@ -335,38 +335,54 @@ if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
         });
 
         function fetchRelatedItems(itemNo) {
-            $.ajax({
-                type: 'GET',
-                url: `fetch_related_ics_items.php?item_no=${itemNo}`,
-                success: function (data) {
-                    try {
-                        const items = JSON.parse(data);
-                        const relatedItemsHTML = items.map(item => `
-                            <tr>
-                                <td>${item.qty}</td>
-                                <td>${item.unit}</td>
-                                <td>${item.unit_cost}</td>
-                                <td>${item.total_cost}</td>
-                                <td>${item.description}</td>
-                                <td>${item.item_no}</td>
-                                <td>${item.estimate}</td>
-                                <td>
-                                    <a href="update_ics.php?id=${item.id}" class="btn btn-primary btn-sm"><i class="bi bi-pencil-square"></i></a>
-                                    <a href="delete_ics.php?id=${item.id}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this item?')"><i class="bi bi-trash"></i></a>
-                                </td>
-                            </tr>
-                        `).join('');
-                        $('#related-items').html(relatedItemsHTML);
-                    } catch (error) {
-                        $('#related-items').html('<tr><td colspan="5">Error parsing related items.</td></tr>');
-                        console.error("Parsing error:", error);
-                    }
-                },
-                error: function () {
-                    $('#related-items').html('<tr><td colspan="5">Error fetching related items.</td></tr>');
-                }
-            });
+    $.ajax({
+        type: 'GET',
+        url: `fetch_related_ics_items.php?item_no=${itemNo}`,
+        success: function (data) {
+            try {
+                const items = JSON.parse(data);
+                let totalCostSum = 0; // Initialize sum variable
+                const relatedItemsHTML = items.map(item => {
+                    const totalCost = parseFloat(item.total_cost) || 0; // Parse and handle invalid values
+                    totalCostSum += totalCost; // Add to the total sum
+
+                    return `
+                        <tr>
+                            <td>${item.qty}</td>
+                            <td>${item.unit}</td>
+                            <td>${item.unit_cost}</td>
+                            <td>${totalCost.toFixed(2)}</td>
+                            <td>${item.description}</td>
+                            <td>${item.item_no}</td>
+                            <td>${item.estimate}</td>
+                            <td>
+                                <a href="update_ics.php?id=${item.id}" class="btn btn-primary btn-sm"><i class="bi bi-pencil-square"></i></a>
+                                <a href="delete_ics.php?id=${item.id}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this item?')"><i class="bi bi-trash"></i></a>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+
+                // Add the sum of total_cost to the page
+                const sumHTML = `
+                    <tr>
+                        <td colspan="7" class="text-right"><strong>Total Cost</strong></td>
+                        <td><strong>${totalCostSum.toFixed(2)}</strong></td>
+                    </tr>
+                `;
+                
+                $('#related-items').html(relatedItemsHTML + sumHTML);
+            } catch (error) {
+                $('#related-items').html('<tr><td colspan="5">Error parsing related items.</td></tr>');
+                console.error("Parsing error:", error);
+            }
+        },
+        error: function () {
+            $('#related-items').html('<tr><td colspan="5">Error fetching related items.</td></tr>');
         }
+    });
+}
+
 
 
     });
