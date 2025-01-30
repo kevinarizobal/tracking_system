@@ -34,7 +34,6 @@ if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
                                 <th>Name</th>
                                 <th>Fund Cluster</th>
                                 <th>PAR No.</th>
-                                <th>Amount</th>
                                 <th>Received By</th>
                                 <th>Position/Office</th>
                                 <th>Date Received</th>
@@ -65,7 +64,6 @@ if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
                                         <td>{$row['entity_name']}</td>
                                         <td>{$row['fund_cluster']}</td>
                                         <td>{$row['par_no']}</td>
-                                        <td>{$row['amount']}</td>
                                         <td>{$row['received_by']}</td>
                                         <td>{$row['position']}</td>
                                         <td>{$row['receive_date']}</td>
