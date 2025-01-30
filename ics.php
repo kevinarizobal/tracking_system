@@ -345,8 +345,11 @@ if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
                             <tr>
                                 <td>${item.qty}</td>
                                 <td>${item.unit}</td>
-                                <td>${item.description}</td>
+                                <td>${item.unit_cost}</td>
                                 <td>${item.total_cost}</td>
+                                <td>${item.description}</td>
+                                <td>${item.item_no}</td>
+                                <td>${item.estimate}</td>
                                 <td>
                                     <a href="update_ics.php?id=${item.id}" class="btn btn-primary btn-sm"><i class="bi bi-pencil-square"></i></a>
                                     <a href="delete_ics.php?id=${item.id}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this item?')"><i class="bi bi-trash"></i></a>
