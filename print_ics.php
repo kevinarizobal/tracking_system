@@ -7,6 +7,11 @@ class MYPDF extends TCPDF {
     public function Header() {
         $this->SetFont('helvetica', 'B', 12);
         $this->Cell(0, 35, 'INVENTORY CUSTODIAN SLIP', 0, 1, 'C');
+
+        // Add "Appendix 59" in the upper right corner
+        $this->SetFont('helvetica', 'I', 6);
+        $this->SetXY($this->getPageWidth() - 45, 5); // Positioning at the top right
+        $this->Cell(40, 10, 'Appendix 59', 0, 1, 'R');
     }
 }
 
@@ -67,7 +72,7 @@ $pdf->SetFont('helvetica', 'U', 10);
 $pdf->Cell(75, 6, $fundCluster, 0, 0, 'L');
 $pdf->SetFont('helvetica', '', 10);
 
-$pdf->Cell(35, 6, "PAR No.:", 0, 0, 'R');
+$pdf->Cell(35, 6, "ICS No.:", 0, 0, 'R');
 $pdf->SetFont('helvetica', 'U', 10);
 $pdf->Cell(25, 6, $ics_no, 0, 1, 'R');
 $pdf->SetFont('helvetica', '', 10);
