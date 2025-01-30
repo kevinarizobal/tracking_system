@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     <link href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <title>NEMSU-SUPTRACK</title>
+    <title>NEMSU Cantilan Supply Tracking System</title>
 </head>
 <style>
     *{
