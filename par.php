@@ -264,6 +264,11 @@ if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
                                     <a href="delete_par.php?id=${item.id}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this item?')"><i class="bi bi-trash"></i></a>
                                 </td>
                             </tr>
+                            <tr>
+                                 <td colspan='5' align='center'>TOTAL AMOUNT</td>
+                                 <td>${item.totalamount}</td>
+                                 <td></td>
+                            </tr>
                         `;
                     }).join('');
                     $('#related-items').html(relatedItemsHTML);
