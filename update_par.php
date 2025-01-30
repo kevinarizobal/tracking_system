@@ -15,7 +15,8 @@ include('config.php');
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
 // Fetch data for the given ID
-$sql = "SELECT `id`, `entity_name`, `fund_cluster`, `par_no`, `qty`, `unit`, `description`, `property_number`, `date_acquired`, `amount`, `received_by`, `position`, `issued_by`, `date_file` 
+$sql = "SELECT `id`, `entity_name`, `fund_cluster`, `par_no`, `qty`, `unit`, `description`, `property_number`, 
+`date_acquired`, `amount`, `received_by`, `position`, `issued_by`, `date_file`, `position2`, `receive_date`, `issue_date` 
 FROM `par_tb` WHERE `id` = $id LIMIT 1";
 $result = $conn->query($sql);
 
@@ -36,6 +37,9 @@ if ($result && $result->num_rows > 0) {
     $position = $row['position'];
     $issued_by = $row['issued_by'];
     $date_file = $row['date_file'];
+    $position2 = $row['position2'];
+    $receive_date = $row['receive_date'];
+    $issue_date = $row['issue_date'];
 } else {
     die("No record found for ID $id");
 }
@@ -54,7 +58,10 @@ if (isset($_POST['update'])) {
     $received_by = $_POST['received_by'];
     $position = $_POST['position'];
     $issued_by = $_POST['issued_by'];
-    $date_file = $_POST['date_file'];
+    $position2 = $_POST['position2'];
+    $position = $_POST['position'];
+    $receive_date = $_POST['receive-date'];
+    $issue_date = $_POST['issue-date'];
 
     $update_sql = "UPDATE `par_tb` SET 
         `entity_name` = '$entity_name', 
@@ -69,7 +76,10 @@ if (isset($_POST['update'])) {
         `received_by` = '$received_by', 
         `position` = '$position', 
         `issued_by` = '$issued_by', 
-        `date_file` = '$date_file' 
+        `position2` = '$position2', 
+        `position` = '$position',
+        `receive_date` = '$receive_date',
+        `issue_date` = '$issue_date'
         WHERE `id` = $id";
 
     if ($conn->query($update_sql) === TRUE) {
@@ -100,41 +110,17 @@ if (isset($_POST['update'])) {
                     </div>
                     <form method="POST">
                         <div class="row align-items-end">
-                            <div class="col-6 mb-3">
+                            <div class="col-4 mb-3">
                                 <label class="form-label" style="font-weight: 500;">Entity Name</label>
                                 <input type="text" id="entity-name" name="entity_name" class="form-control" value="<?= htmlspecialchars($entity_name); ?>" >
                             </div>
-                            <div class="col-6 mb-3">
+                            <div class="col-4 mb-3">
                                 <label class="form-label" style="font-weight: 500;">Fund Cluster</label>
                                 <input type="text" id="fund-cluster" name="fund_cluster" class="form-control" value="<?= htmlspecialchars($fund_cluster); ?>">
                             </div>
-                            <div class="col-12 mb-3">
+                            <div class="col-4 mb-3">
                                 <label class="form-label" style="font-weight: 500;">PAR No.</label>
                                 <input type="text" id="par-no" name="par_no" class="form-control" value="<?= htmlspecialchars($par_no); ?>" >
-                            </div>
-                            <div class="col-4 mb-3">
-                                <label class="form-label" style="font-weight: 500;">Quantity</label>
-                                <input type="number" id="qty" name="qty" class="form-control" value="<?= htmlspecialchars($qty); ?>" >
-                            </div>
-                            <div class="col-4 mb-3">
-                                <label class="form-label" style="font-weight: 500;">Unit</label>
-                                <input type="text" id="unit" name="unit" class="form-control" value="<?= htmlspecialchars($unit); ?>" >
-                            </div>
-                            <div class="col-4 mb-3">
-                                <label class="form-label" style="font-weight: 500;">Property No.</label>
-                                <input type="text" id="property-no" name="property_no" class="form-control" value="<?= htmlspecialchars($property_number); ?>">
-                            </div>
-                            <div class="col-12 mb-3">
-                                <label class="form-label" style="font-weight: 500;">Description</label>
-                                <input type="text" id="description" name="description" class="form-control" value="<?= htmlspecialchars($description); ?>">
-                            </div>
-                            <div class="col-6 mb-3">
-                                <label class="form-label" style="font-weight: 500;">Date Acquired</label>
-                                <input type="date" id="date_acquired" name="date_acquired" class="form-control" value="<?= htmlspecialchars($date_acquired); ?>">
-                            </div>
-                            <div class="col-6 mb-3">
-                                <label class="form-label" style="font-weight: 500;">Date File</label>
-                                <input type="date" id="date-file" name="date_file" class="form-control" value="<?= htmlspecialchars($date_file); ?>">
                             </div>
                             <div class="col-4 mb-3">
                                 <label class="form-label" style="font-weight: 500;">Received By</label>
@@ -145,8 +131,46 @@ if (isset($_POST['update'])) {
                                 <input type="text" id="position" name="position" class="form-control" value="<?= htmlspecialchars($position); ?>">
                             </div>
                             <div class="col-4 mb-3">
+                                <label class="form-label" style="font-weight: 500;">Date Receive</label>
+                                <input type="date" id="date-receive" name="receive-date" class="form-control" value="<?= htmlspecialchars($receive_date); ?>">
+                            </div>
+                            <div class="col-4 mb-3">
                                 <label class="form-label" style="font-weight: 500;">Issued By</label>
                                 <input type="text" id="issued-by" name="issued_by" class="form-control" value="<?= htmlspecialchars($issued_by); ?>">
+                            </div>
+                            <div class="col-4 mb-3">
+                                <label class="form-label" style="font-weight: 500;">Position/Office</label>
+                                <input type="text" id="position2" name="position2" class="form-control" value="<?= htmlspecialchars($position2); ?>">
+                            </div>
+                            <div class="col-4 mb-3">
+                                <label class="form-label" style="font-weight: 500;">Date Issue</label>
+                                <input type="date" id="date-issue" name="issue-date" class="form-control" value="<?= htmlspecialchars($issue_date); ?>">
+                            </div>
+                            
+                            <!-- Items -->
+                            <div class="col-1 mb-3">
+                                <label class="form-label" style="font-weight: 500;">Quantity</label>
+                                <input type="number" id="qty" name="qty" class="form-control" value="<?= htmlspecialchars($qty); ?>" >
+                            </div>
+                            <div class="col-1 mb-3">
+                                <label class="form-label" style="font-weight: 500;">Unit</label>
+                                <input type="text" id="unit" name="unit" class="form-control" value="<?= htmlspecialchars($unit); ?>" >
+                            </div>
+                            <div class="col-4 mb-3">
+                                <label class="form-label" style="font-weight: 500;">Description</label>
+                                <input type="text" id="description" name="description" class="form-control" value="<?= htmlspecialchars($description); ?>">
+                            </div>
+                            <div class="col-2 mb-3">
+                                <label class="form-label" style="font-weight: 500;">Property No.</label>
+                                <input type="text" id="property-no" name="property_no" class="form-control" value="<?= htmlspecialchars($property_number); ?>">
+                            </div>
+                            <div class="col-2 mb-3">
+                                <label class="form-label" style="font-weight: 500;">Date Acquired</label>
+                                <input type="date" id="date_acquired" name="date_acquired" class="form-control" value="<?= htmlspecialchars($date_acquired); ?>">
+                            </div>
+                            <div class="col-2 mb-3">
+                                <label class="form-label" style="font-weight: 500;">Amount</label>
+                                <input type="number" id="amount" name="amount" class="form-control" value="<?= htmlspecialchars($amount); ?>">
                             </div>
                         </div>
                         <input type="submit" class="btn btn-primary mt-2" name="update" value="Update PAR Information">
