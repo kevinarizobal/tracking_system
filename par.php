@@ -242,41 +242,55 @@ if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
         });
 
         function fetchRelatedItems(propertyNumber) {
-            $.ajax({
-                type: 'GET',
-                url: `fetch_related_items.php?property_number=${propertyNumber}`,
-                success: function (data) {
-                    const items = JSON.parse(data);
-                    const relatedItemsHTML = items.map(item => {
-                        console.log('Item ID:', item.id);  // Log the ID to the console
-                        return `
-                            <tr>
-                                <td>${item.qty}</td>
-                                <td>${item.unit}</td>
-                                <td>${item.description}</td>
-                                <td>${item.property_number}</td>
-                                <td>${item.date_acquired}</td>
-                                <td>${item.amount}</td>
-                                <td>
-                                    <a href="update_par.php?id=${item.id}" class="btn btn-primary btn-sm"><i class="bi bi-pencil-square"></i></a>
-                                    <a href="delete_par.php?id=${item.id}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this item?')"><i class="bi bi-trash"></i></a>
-                                </td>
-                            </tr>
-                            <tr>
-                                 <td colspan='5' align='center'>TOTAL AMOUNT</td>
-                                 <td>${item.totalamount}</td>
-                                 <td></td>
-                            </tr>
-                        `;
-                    }).join('');
-                    $('#related-items').html(relatedItemsHTML);
-                },
+    $.ajax({
+        type: 'GET',
+        url: `fetch_related_items.php?property_number=${propertyNumber}`,
+        success: function (data) {
+            const items = JSON.parse(data);
+            
+            // Calculate total amount
+            let totalAmount = 0;
+            const relatedItemsHTML = items.map(item => {
+                totalAmount += parseFloat(item.amount) || 0; // Ensure amount is treated as a number
+                return `
+                    <tr>
+                        <td>${item.qty}</td>
+                        <td>${item.unit}</td>
+                        <td>${item.description}</td>
+                        <td>${item.property_number}</td>
+                        <td>${item.date_acquired}</td>
+                        <td>${item.amount}</td>
+                        <td>
+                            <a href="update_par.php?id=${item.id}" class="btn btn-primary btn-sm">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                            <a href="delete_par.php?id=${item.id}" class="btn btn-danger btn-sm" 
+                               onclick="return confirm('Are you sure you want to delete this item?')">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
 
-                error: function () {
-                    $('#related-items').html('<tr><td colspan="5">Error fetching related items.</td></tr>');
-                }
-            });
+            // Append total row separately
+            const totalRow = `
+                <tr>
+                    <td colspan="5" align="center"><strong>TOTAL AMOUNT</strong></td>
+                    <td><strong>${totalAmount.toFixed(2)}</strong></td>
+                    <td></td>
+                </tr>
+            `;
+
+            $('#related-items').html(relatedItemsHTML + totalRow);
+        },
+
+        error: function () {
+            $('#related-items').html('<tr><td colspan="7">Error fetching related items.</td></tr>');
         }
+    });
+}
+
 
         // Add dynamic fields
         $('#add-field').click(function () {
