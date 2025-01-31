@@ -9,7 +9,7 @@ if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
     exit();
 }
 
-// SQL Query to merge data
+// SQL Query to merge data from only `ics_tb` and `par_tb`
 $sql = "
 SELECT 
     id, entity_name, fund_cluster, ics_no AS reference_no, qty, unit, 
@@ -40,36 +40,6 @@ SELECT
     NULL AS password, NULL AS role, NULL AS datecreated, NULL AS lastlogin, 
     NULL AS status, 'PAR' AS source_table
 FROM par_tb
-
-UNION ALL
-
-SELECT 
-    id, NULL AS entity_name, NULL AS fund_cluster, NULL AS reference_no, 
-    NULL AS qty, unit, cost, NULL AS total_cost, article AS description, 
-    NULL AS item_no, NULL AS estimate, NULL AS receive_by, NULL AS received_role, 
-    NULL AS issue_by, NULL AS issued_role, date_acquired AS date_file, 
-    property_id AS property_number, date_acquired, NULL AS received_by, 
-    NULL AS position, NULL AS issued_by, serial_id, property_id, 
-    article, office, service_status, date_counted, coa_rep, 
-    property_cus, NULL AS userid, NULL AS email, NULL AS username, 
-    NULL AS fullname, NULL AS password, NULL AS role, NULL AS datecreated, 
-    NULL AS lastlogin, NULL AS status, 'QR' AS source_table
-FROM qr_tb
-
-UNION ALL
-
-SELECT 
-    userid AS id, NULL AS entity_name, NULL AS fund_cluster, NULL AS reference_no, 
-    NULL AS qty, NULL AS unit, NULL AS cost, NULL AS total_cost, NULL AS description, 
-    NULL AS item_no, NULL AS estimate, NULL AS receive_by, NULL AS received_role, 
-    NULL AS issue_by, NULL AS issued_role, datecreated AS date_file, 
-    NULL AS property_number, NULL AS date_acquired, NULL AS received_by, 
-    NULL AS position, NULL AS issued_by, NULL AS serial_id, NULL AS property_id, 
-    NULL AS article, NULL AS office, NULL AS service_status, 
-    NULL AS date_counted, NULL AS coa_rep, NULL AS property_cus, 
-    userid, email, username, fullname, password, role, 
-    datecreated, lastlogin, status, 'USER' AS source_table
-FROM user_tb
 ";
 
 $result = $conn->query($sql);
@@ -113,14 +83,6 @@ $result = $conn->query($sql);
                                 <th>Office</th>
                                 <th>Service Status</th>
                                 <th>COA Rep</th>
-                                <th>Property Custodian</th>
-                                <th>Email</th>
-                                <th>Username</th>
-                                <th>Full Name</th>
-                                <th>Role</th>
-                                <th>Date Created</th>
-                                <th>Last Login</th>
-                                <th>Status</th>
                                 <th>Source Table</th>
                             </tr>
                         </thead>
@@ -148,14 +110,6 @@ $result = $conn->query($sql);
                                     <td><?= htmlspecialchars($row['office']) ?></td>
                                     <td><?= htmlspecialchars($row['service_status']) ?></td>
                                     <td><?= htmlspecialchars($row['coa_rep']) ?></td>
-                                    <td><?= htmlspecialchars($row['property_cus']) ?></td>
-                                    <td><?= htmlspecialchars($row['email']) ?></td>
-                                    <td><?= htmlspecialchars($row['username']) ?></td>
-                                    <td><?= htmlspecialchars($row['fullname']) ?></td>
-                                    <td><?= htmlspecialchars($row['role']) ?></td>
-                                    <td><?= htmlspecialchars($row['datecreated']) ?></td>
-                                    <td><?= htmlspecialchars($row['lastlogin']) ?></td>
-                                    <td><?= htmlspecialchars($row['status']) ?></td>
                                     <td><?= htmlspecialchars($row['source_table']) ?></td>
                                 </tr>
                             <?php endwhile; ?>
