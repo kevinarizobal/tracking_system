@@ -54,6 +54,8 @@ if ($result->num_rows > 0) {
         $issue_by = $row['issue_by'];
         $role2 = $row['role2'];
         $date_file = $row['date_file'];
+        $receivefrom_date = $row['receivefrom_date'];
+        $receiveby_date = $row['receiveby_date'];
     }
 } else {
     die("No records found.");
@@ -160,7 +162,7 @@ $pdf->SetXY(40,275);
 $pdf->Cell(125, 6, "$role1", 0, 0, 'L');
 $pdf->SetFont('helvetica', '', 8);
 $pdf->SetXY(41,280);
-$pdf->Cell(125, 6, "$date_file", 0, 0, 'L');
+$pdf->Cell(125, 6, "$receivefrom_date", 0, 0, 'L');
 
 
 // Receive By Signature
@@ -181,7 +183,7 @@ $pdf->SetXY(142,275);
 $pdf->Cell(120, 6, "$role2", 0, 0, 'L');
 $pdf->SetFont('helvetica', '', 8);
 $pdf->SetXY(145,280);
-$pdf->Cell(120, 6, "$date_file", 0, 0, 'L');
+$pdf->Cell(120, 6, "$receiveby_date", 0, 0, 'L');
 
 $pdf->Output('property_acknowledgment_receipt_static.pdf', 'I');
 ?>
