@@ -1,11 +1,11 @@
 <?php
 include('config.php');
 
-if (isset($_GET['property_number'])) {
-    $property_number = $_GET['property_number'];
-    $sql = "SELECT * FROM par_tb WHERE property_number = ?";
+if (isset($_GET['par_no'])) {
+    $par_no = $_GET['par_no'];
+    $sql = "SELECT * FROM par_tb WHERE par_no = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param('s', $property_number);
+    $stmt->bind_param('s', $par_no);
     $stmt->execute();
     $result = $stmt->get_result();
     $relatedItems = [];
