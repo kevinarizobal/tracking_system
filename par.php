@@ -53,7 +53,7 @@ if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
                                 WHERE id IN (
                                     SELECT MIN(id)
                                     FROM par_tb
-                                    GROUP BY property_number
+                                    GROUP BY par_no
                                 )
                             ";
                             $result = $conn->query($sql);
@@ -233,7 +233,7 @@ if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
                     $('#view-par-details').html(detailsHTML);
 
                     // Fetch related items
-                    fetchRelatedItems(details.property_number);
+                    fetchRelatedItems(details.par_no);
                 },
                 error: function () {
                     $('#view-par-details').html('<p>Error fetching details.</p>');
@@ -241,10 +241,10 @@ if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
             });
         });
 
-        function fetchRelatedItems(propertyNumber) {
+        function fetchRelatedItems(parNo) {
     $.ajax({
         type: 'GET',
-        url: `fetch_related_items.php?property_number=${propertyNumber}`,
+        url: `fetch_related_items.php?par_no=${parNo}`,
         success: function (data) {
             const items = JSON.parse(data);
             
@@ -347,5 +347,6 @@ if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
 
     });
 </script>
+<?php include('link/footer.php');?>
 </body>
 </html>
