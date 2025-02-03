@@ -72,7 +72,7 @@ if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
                                         <td>{$row['issue_date']}</td>
                                         <td>
                                             <button class='btn btn-info btn-sm view-btn' data-id='{$row['id']}'><i class='bi bi-eye'></i></button>
-                                            <a href='print_par.php?id={$row['property_number']}' target='_blank' class='btn btn-success btn-sm'><i class='bi bi-printer'></i></a>
+                                            <a href='print_par.php?id={$row['par_no']}' target='_blank' class='btn btn-success btn-sm'><i class='bi bi-printer'></i></a>
                                             <a href='update_par.php?id={$row['id']}' class='btn btn-primary btn-sm'><i class='bi bi-pencil-square'></i></a>
                                             <a href='delete_par.php?id={$row['id']}' class='btn btn-danger btn-sm'><i class='bi bi-trash'></i></a>
                                         </td>
