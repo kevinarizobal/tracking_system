@@ -8,6 +8,9 @@ if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
     header("Location: index.php");
     exit();
 }
+
+$role = $_SESSION['Role']; 
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -24,10 +27,20 @@ if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
             </div>
             <div class="card">
                 <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#crudModal">Create Form</button>
-                    </div>
+                    <?php
+                    if($role == 'Admin'){
+                        echo "<div class='d-flex align-items-center justify-content-between mb-3'>
+                        <button type='button' class='btn btn-primary mb-3' data-bs-toggle='modal' data-bs-target='#crudModal'>Create Form</button>
+                        </div>";
+                    }
+                    if($role == 'Staff'){
+                        echo "<div class='d-flex align-items-center justify-content-between mb-3'>
+                        <button type='button' class='btn btn-primary mb-3' data-bs-toggle='modal' data-bs-target='#crudModal'>Create Form</button>
+                        </div>";
+                    }
+                    ?>
                     <table class="table table-responsive mt-4" id="crud-table">
+                    
                         <thead>
                             <tr>
                                 <th>No.</th>
@@ -45,39 +58,50 @@ if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
                         </thead>
                         <tbody>
                         <?php
-                            include('config.php');
-                            $i = 1;
-                            $sql = "
-                                SELECT * FROM ics_tb 
-                                WHERE id IN (
-                                    SELECT MIN(id)
-                                    FROM ics_tb
-                                    GROUP BY ics_no
-                                )
-                            ";
-                            $result = $conn->query($sql);
-                            while($row = $result->fetch_assoc()) {
-                                $no = $i++;
-                                echo "<tr>
-                                        <td>{$no}</td>
-                                        <td>{$row['entity_name']}</td>
-                                        <td>{$row['fund_cluster']}</td>
-                                        <td>{$row['ics_no']}</td>
-                                        <td>{$row['receive_by']}</td>
-                                        <td>{$row['role1']}</td>
-                                        <td>{$row['receivefrom_date']}</td>
-                                        <td>{$row['issue_by']}</td>
-                                        <td>{$row['role2']}</td>
-                                        <td>{$row['receiveby_date']}</td>
-                                        <td>
-                                            <button class='btn btn-info btn-sm view-btn' data-id='{$row['id']}'><i class='bi bi-eye'></i></button>
-                                            <a href='print_ics.php?id={$row['ics_no']}' target='_blank' class='btn btn-success btn-sm'><i class='bi bi-printer'></i></a>
-                                            <a href='update_ics.php?id={$row['id']}' class='btn btn-primary btn-sm'><i class='bi bi-pencil-square'></i></a>
-                                            <a href='delete_ics.php?id={$row['id']}' class='btn btn-danger btn-sm'><i class='bi bi-trash'></i></a>
-                                        </td>
-                                    </tr>";
+                        $i = 1;
+                        $sql = "
+                            SELECT * FROM ics_tb 
+                            WHERE id IN (
+                                SELECT MIN(id)
+                                FROM ics_tb
+                                GROUP BY ics_no
+                            )
+                        ";
+                        $result = $conn->query($sql);
+
+                        while ($row = $result->fetch_assoc()) {
+                            $no = $i++;
+                            echo "<tr>
+                                    <td>{$no}</td>
+                                    <td>{$row['entity_name']}</td>
+                                    <td>{$row['fund_cluster']}</td>
+                                    <td>{$row['ics_no']}</td>
+                                    <td>{$row['receive_by']}</td>
+                                    <td>{$row['role1']}</td>
+                                    <td>{$row['receivefrom_date']}</td>
+                                    <td>{$row['issue_by']}</td>
+                                    <td>{$row['role2']}</td>
+                                    <td>{$row['receiveby_date']}</td>
+                                    <td>";
+
+                            // Display View and Print buttons for all roles
+                            echo "<button class='btn btn-info btn-sm view-btn' data-id='{$row['id']}'><i class='bi bi-eye'></i></button>
+                                <a href='print_ics.php?id={$row['ics_no']}' target='_blank' class='btn btn-success btn-sm'><i class='bi bi-printer'></i></a>";
+
+                            // Check if session role is set and allow edit/delete for Admin and Staff
+                            if ($role == 'Admin'){
+                                echo "<a href='update_ics.php?id={$row['id']}' class='btn btn-primary btn-sm'><i class='bi bi-pencil-square'></i></a>
+                                    <a href='delete_ics.php?id={$row['id']}' class='btn btn-danger btn-sm'><i class='bi bi-trash'></i></a>";
                             }
-                            ?>
+                            if($role == 'Staff'){
+                                echo "<a href='update_ics.php?id={$row['id']}' class='btn btn-primary btn-sm'><i class='bi bi-pencil-square'></i></a>
+                                <a href='delete_ics.php?id={$row['id']}' class='btn btn-danger btn-sm'><i class='bi bi-trash'></i></a>";
+                            }
+
+                            echo "</td></tr>";
+                        }
+                        ?>
+
                         </tbody>
                     </table>
                 </div>
@@ -355,10 +379,19 @@ if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
                             <td>${item.description}</td>
                             <td>${item.item_no}</td>
                             <td>${item.estimate}</td>
-                            <td>
-                                <a href="update_ics.php?id=${item.id}" class="btn btn-primary btn-sm"><i class="bi bi-pencil-square"></i></a>
-                                <a href="delete_ics.php?id=${item.id}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this item?')"><i class="bi bi-trash"></i></a>
-                            </td>
+                            <td>`
+                            if($role =='Admin'){
+                                `<a href="update_ics.php?id=${item.id}" class="btn btn-primary btn-sm"><i class="bi bi-pencil-square"></i></a>
+                                <a href="delete_ics.php?id=${item.id}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this item?')"><i class="bi bi-trash"></i></a>`
+                            }
+                            if($role =='Staff'){
+                                `<a href="update_ics.php?id=${item.id}" class="btn btn-primary btn-sm"><i class="bi bi-pencil-square"></i></a>
+                                <a href="delete_ics.php?id=${item.id}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this item?')"><i class="bi bi-trash"></i></a>`
+                            }
+                                
+                            `</td>
+
+                            $('#view-par-details').html(detailsHTML);
                         </tr>
                     `;
                 }).join('');
