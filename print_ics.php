@@ -28,7 +28,7 @@ if (!$id) {
     die("No property ID provided.");
 }
 
-$sql = "SELECT * FROM ics_tb WHERE item_no = ?";
+$sql = "SELECT * FROM ics_tb WHERE ics_no = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $id);
 $stmt->execute();
