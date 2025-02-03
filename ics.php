@@ -52,7 +52,7 @@ if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
                                 WHERE id IN (
                                     SELECT MIN(id)
                                     FROM ics_tb
-                                    GROUP BY item_no
+                                    GROUP BY ics_no
                                 )
                             ";
                             $result = $conn->query($sql);
@@ -71,7 +71,7 @@ if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
                                         <td>{$row['receiveby_date']}</td>
                                         <td>
                                             <button class='btn btn-info btn-sm view-btn' data-id='{$row['id']}'><i class='bi bi-eye'></i></button>
-                                            <a href='print_ics.php?id={$row['item_no']}' target='_blank' class='btn btn-success btn-sm'><i class='bi bi-printer'></i></a>
+                                            <a href='print_ics.php?id={$row['ics_no']}' target='_blank' class='btn btn-success btn-sm'><i class='bi bi-printer'></i></a>
                                             <a href='update_ics.php?id={$row['id']}' class='btn btn-primary btn-sm'><i class='bi bi-pencil-square'></i></a>
                                             <a href='delete_ics.php?id={$row['id']}' class='btn btn-danger btn-sm'><i class='bi bi-trash'></i></a>
                                         </td>
@@ -322,7 +322,7 @@ if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
                         $('#view-par-details').html(detailsHTML);
 
                         // Fetch related items
-                        fetchRelatedItems(details.item_no);
+                        fetchRelatedItems(details.ics_no);
                     } catch (error) {
                         $('#view-par-details').html('<p>Error parsing data.</p>');
                         console.error("Parsing error:", error);
@@ -334,10 +334,10 @@ if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
             });
         });
 
-        function fetchRelatedItems(itemNo) {
+        function fetchRelatedItems(icsNo) {
     $.ajax({
         type: 'GET',
-        url: `fetch_related_ics_items.php?item_no=${itemNo}`,
+        url: `fetch_related_ics_items.php?ics_no=${icsNo}`,
         success: function (data) {
             try {
                 const items = JSON.parse(data);
@@ -387,5 +387,6 @@ if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
 
     });
 </script>
+<?php include('link/footer.php');?>
 </body>
 </html>
