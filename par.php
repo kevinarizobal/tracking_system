@@ -8,6 +8,8 @@ if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
     header("Location: index.php");
     exit();
 }
+$role = $_SESSION['Role'];
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -24,9 +26,19 @@ if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
             </div>
             <div class="card">
                 <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#crudModal">Create Form</button>
-                    </div>
+                    <?php
+                        if($role == 'Admin'){
+                            echo '<div class="d-flex align-items-center justify-content-between mb-3">
+                                    <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#crudModal">Create Form</button>
+                                  </div>';
+                        }
+                        if($role == 'Staff'){
+                            echo '<div class="d-flex align-items-center justify-content-between mb-3">
+                                    <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#crudModal">Create Form</button>
+                                  </div>';
+                        }
+                    ?>
+                    
                     <table class="table table-responsive mt-4" id="crud-table">
                         <thead>
                             <tr>
@@ -70,13 +82,22 @@ if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
                                         <td>{$row['issued_by']}</td>
                                         <td>{$row['position2']}</td>
                                         <td>{$row['issue_date']}</td>
-                                        <td>
-                                            <button class='btn btn-info btn-sm view-btn' data-id='{$row['id']}'><i class='bi bi-eye'></i></button>
-                                            <a href='print_par.php?id={$row['par_no']}' target='_blank' class='btn btn-success btn-sm'><i class='bi bi-printer'></i></a>
-                                            <a href='update_par.php?id={$row['id']}' class='btn btn-primary btn-sm'><i class='bi bi-pencil-square'></i></a>
-                                            <a href='delete_par.php?id={$row['id']}' class='btn btn-danger btn-sm'><i class='bi bi-trash'></i></a>
-                                        </td>
-                                    </tr>";
+                                        <td>";
+
+                                        echo "<button class='btn btn-info btn-sm view-btn' data-id='{$row['id']}'><i class='bi bi-eye'></i></button>
+                                              <a href='print_par.php?id={$row['par_no']}' target='_blank' class='btn btn-success btn-sm'><i class='bi bi-printer'></i></a> ";
+                                         
+                                        if($role == 'Admin'){
+                                            echo "<a href='update_par.php?id={$row['id']}' class='btn btn-primary btn-sm'><i class='bi bi-pencil-square'></i></a>
+                                            <a href='delete_par.php?id={$row['id']}' class='btn btn-danger btn-sm'><i class='bi bi-trash'></i></a>";
+                                        }
+                                        if($role == 'Staff'){
+                                            echo "<a href='update_par.php?id={$row['id']}' class='btn btn-primary btn-sm'><i class='bi bi-pencil-square'></i></a>
+                                            <a href='delete_par.php?id={$row['id']}' class='btn btn-danger btn-sm'><i class='bi bi-trash'></i></a>";
+                                        }
+                                           
+                                            
+                                echo"</td></tr>";
                             }
                             ?>
                         </tbody>
@@ -247,11 +268,24 @@ if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
         url: `fetch_related_items.php?par_no=${parNo}`,
         success: function (data) {
             const items = JSON.parse(data);
+            const role = window.userRole || '';
             
             // Calculate total amount
             let totalAmount = 0;
             const relatedItemsHTML = items.map(item => {
                 totalAmount += parseFloat(item.amount) || 0; // Ensure amount is treated as a number
+                 let actionButtons = '';
+                if (role === 'Admin' || role === 'Staff') {
+                    actionButtons = `
+                        <a href="update_par.php?id=${item.id}" class="btn btn-primary btn-sm">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                        <a href="delete_par.php?id=${item.id}" class="btn btn-danger btn-sm" 
+                           onclick="return confirm('Are you sure you want to delete this item?')">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    `;
+                }
                 return `
                     <tr>
                         <td>${item.qty}</td>
@@ -260,15 +294,28 @@ if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
                         <td>${item.property_number}</td>
                         <td>${item.date_acquired}</td>
                         <td>${item.amount}</td>
-                        <td>
-                            <a href="update_par.php?id=${item.id}" class="btn btn-primary btn-sm">
+                        <td>`
+
+                        if($role == 'Admin'){
+                            `<a href="update_par.php?id=${item.id}" class="btn btn-primary btn-sm">
                                 <i class="bi bi-pencil-square"></i>
                             </a>
                             <a href="delete_par.php?id=${item.id}" class="btn btn-danger btn-sm" 
                                onclick="return confirm('Are you sure you want to delete this item?')">
                                 <i class="bi bi-trash"></i>
+                            </a>`
+                        }
+                        if($role == 'Staff'){
+                            `<a href="update_par.php?id=${item.id}" class="btn btn-primary btn-sm">
+                                <i class="bi bi-pencil-square"></i>
                             </a>
-                        </td>
+                            <a href="delete_par.php?id=${item.id}" class="btn btn-danger btn-sm" 
+                               onclick="return confirm('Are you sure you want to delete this item?')">
+                                <i class="bi bi-trash"></i>
+                            </a>`
+                        }
+                            
+                        `</td>
                     </tr>
                 `;
             }).join('');
