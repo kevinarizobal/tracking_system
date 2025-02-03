@@ -29,7 +29,7 @@ if (!$id) {
     die("No property ID provided.");
 }
 
-$sql = "SELECT * FROM par_tb WHERE property_number = ?";
+$sql = "SELECT * FROM par_tb WHERE par_no = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $id);
 $stmt->execute();
