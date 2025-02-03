@@ -79,6 +79,7 @@ if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
             <label for="role" class="form-label">Role</label>
             <select class="form-select" id="role" required>
               <option value="Admin">Admin</option>
+              <option value="Staff">Staff</option>
               <option value="User">User</option>
             </select>
           </div>
@@ -128,6 +129,7 @@ if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
             <select class="form-select" id="editRole" required>
               <option value="Admin">Admin</option>
               <option value="Staff">Staff</option>
+              <option value="User">User</option>
             </select>
           </div>
           <div class="mb-3">
@@ -145,5 +147,6 @@ if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
 </div>
 
 <?php include('link/script.php');?>
+<?php include('link/footer.php');?>
 </body>
 </html>
