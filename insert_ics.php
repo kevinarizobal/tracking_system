@@ -14,6 +14,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $issue_date = $_POST['issue-date'];
     $receive_date = $_POST['receive-date'];
 
+    // Check if ics_no already exists
+    $check_sql = "SELECT ics_no FROM ics_tb WHERE ics_no = '" . $conn->real_escape_string($ics_no) . "'";
+    $check_result = $conn->query($check_sql);
+    
+    if ($check_result->num_rows > 0) {
+        echo "<script>alert('Error: ICS No already exists. Please use a different ICS No.'); window.history.back();</script>";
+        exit;
+    }
+
     // Item data arrays
     $quantities = $_POST['quantity'];
     $units = $_POST['unit'];
@@ -56,14 +65,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Execute the query
     if ($conn->query($sql) === TRUE) {
-        echo json_encode(["status" => "success", "message" => "Data inserted successfully."]);
+        echo "<script>alert('Data inserted successfully.'); window.location.href = 'ics.php';</script>";
     } else {
-        echo json_encode(["status" => "error", "message" => "Error: " . $conn->error]);
+        echo "<script>alert('Error: " . $conn->error . "'); window.history.back();</script>";
     }
 
     // Close connection
     $conn->close();
 } else {
-    echo json_encode(["status" => "error", "message" => "Invalid request method."]);
+    echo "<script>alert('Invalid request method.'); window.history.back();</script>";
 }
 ?>
