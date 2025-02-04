@@ -228,6 +228,9 @@ $role = $_SESSION['Role'];
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <script>
+    window.userRole = "<?php echo $_SESSION['Role']; ?>";
+</script>
+<script>
     $(document).ready(function () {
         $('#crud-table').DataTable();
 
@@ -263,80 +266,61 @@ $role = $_SESSION['Role'];
         });
 
         function fetchRelatedItems(parNo) {
-    $.ajax({
-        type: 'GET',
-        url: `fetch_related_items.php?par_no=${parNo}`,
-        success: function (data) {
-            const items = JSON.parse(data);
-            const role = window.userRole || '';
-            
-            // Calculate total amount
-            let totalAmount = 0;
-            const relatedItemsHTML = items.map(item => {
-                totalAmount += parseFloat(item.amount) || 0; // Ensure amount is treated as a number
-                 let actionButtons = '';
-                if (role === 'Admin' || role === 'Staff') {
-                    actionButtons = `
-                        <a href="update_par.php?id=${item.id}" class="btn btn-primary btn-sm">
-                            <i class="bi bi-pencil-square"></i>
-                        </a>
-                        <a href="delete_par.php?id=${item.id}" class="btn btn-danger btn-sm" 
-                           onclick="return confirm('Are you sure you want to delete this item?')">
-                            <i class="bi bi-trash"></i>
-                        </a>
+            $.ajax({
+                type: 'GET',
+                url: `fetch_related_items.php?par_no=${parNo}`,
+                success: function (data) {
+                    const items = JSON.parse(data);
+                    const role = window.userRole || ''; // Use JavaScript variable for user role
+                    
+                    // Calculate total amount
+                    let totalAmount = 0;
+                    const relatedItemsHTML = items.map(item => {
+                        totalAmount += parseFloat(item.amount) || 0; // Ensure amount is treated as a number
+                        
+                        let actionButtons = '';
+                        if (role === 'Admin' || role === 'Staff') {
+                            actionButtons = `
+                                <a href="update_par.php?id=${item.id}" class="btn btn-primary btn-sm">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <a href="delete_par.php?id=${item.id}" class="btn btn-danger btn-sm" 
+                                onclick="return confirm('Are you sure you want to delete this item?')">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            `;
+                        }
+                        
+                        return `
+                            <tr>
+                                <td>${item.qty}</td>
+                                <td>${item.unit}</td>
+                                <td>${item.description}</td>
+                                <td>${item.property_number}</td>
+                                <td>${item.date_acquired}</td>
+                                <td>${item.amount}</td>
+                                <td>${actionButtons}</td>
+                            </tr>
+                        `;
+                    }).join('');
+
+                    // Append total row separately
+                    const totalRow = `
+                        <tr>
+                            <td colspan="5" align="center"><strong>TOTAL AMOUNT</strong></td>
+                            <td><strong>${totalAmount.toFixed(2)}</strong></td>
+                            <td></td>
+                        </tr>
                     `;
+
+                    $('#related-items').html(relatedItemsHTML + totalRow);
+                },
+
+                error: function () {
+                    $('#related-items').html('<tr><td colspan="7">Error fetching related items.</td></tr>');
                 }
-                return `
-                    <tr>
-                        <td>${item.qty}</td>
-                        <td>${item.unit}</td>
-                        <td>${item.description}</td>
-                        <td>${item.property_number}</td>
-                        <td>${item.date_acquired}</td>
-                        <td>${item.amount}</td>
-                        <td>`
-
-                        if($role == 'Admin'){
-                            `<a href="update_par.php?id=${item.id}" class="btn btn-primary btn-sm">
-                                <i class="bi bi-pencil-square"></i>
-                            </a>
-                            <a href="delete_par.php?id=${item.id}" class="btn btn-danger btn-sm" 
-                               onclick="return confirm('Are you sure you want to delete this item?')">
-                                <i class="bi bi-trash"></i>
-                            </a>`
-                        }
-                        if($role == 'Staff'){
-                            `<a href="update_par.php?id=${item.id}" class="btn btn-primary btn-sm">
-                                <i class="bi bi-pencil-square"></i>
-                            </a>
-                            <a href="delete_par.php?id=${item.id}" class="btn btn-danger btn-sm" 
-                               onclick="return confirm('Are you sure you want to delete this item?')">
-                                <i class="bi bi-trash"></i>
-                            </a>`
-                        }
-                            
-                        `</td>
-                    </tr>
-                `;
-            }).join('');
-
-            // Append total row separately
-            const totalRow = `
-                <tr>
-                    <td colspan="5" align="center"><strong>TOTAL AMOUNT</strong></td>
-                    <td><strong>${totalAmount.toFixed(2)}</strong></td>
-                    <td></td>
-                </tr>
-            `;
-
-            $('#related-items').html(relatedItemsHTML + totalRow);
-        },
-
-        error: function () {
-            $('#related-items').html('<tr><td colspan="7">Error fetching related items.</td></tr>');
+            });
         }
-    });
-}
 
 
         // Add dynamic fields
