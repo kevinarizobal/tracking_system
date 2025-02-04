@@ -233,6 +233,9 @@ $role = $_SESSION['Role'];
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-md5/2.19.0/js/md5.min.js"></script>
 <script>
+    window.userRole = "<?php echo $_SESSION['Role']; ?>";
+</script>
+<script>
     $(document).ready(function () {
         $('#crud-table').DataTable();
         // Fetch and display records
@@ -365,11 +368,27 @@ $role = $_SESSION['Role'];
         success: function (data) {
             try {
                 const items = JSON.parse(data);
+                const role = window.userRole || ''; // Use JavaScript variable for user role
+
                 let totalCostSum = 0; // Initialize sum variable
                 const relatedItemsHTML = items.map(item => {
                     const totalCost = parseFloat(item.total_cost) || 0; // Parse and handle invalid values
                     totalCostSum += totalCost; // Add to the total sum
 
+                    let actionButtons = '';
+                    if (role === 'Admin' || role === 'Staff') {
+                        actionButtons = `
+                            <a href="update_ics.php?id=${item.id}" class="btn btn-primary btn-sm">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                            <a href="delete_ics.php?id=${item.id}" class="btn btn-danger btn-sm" 
+                            onclick="return confirm('Are you sure you want to delete this item?')">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        `;
+                        
+                    }
+                        
                     return `
                         <tr>
                             <td>${item.qty}</td>
@@ -379,19 +398,7 @@ $role = $_SESSION['Role'];
                             <td>${item.description}</td>
                             <td>${item.item_no}</td>
                             <td>${item.estimate}</td>
-                            <td>`
-                            if($role =='Admin'){
-                                `<a href="update_ics.php?id=${item.id}" class="btn btn-primary btn-sm"><i class="bi bi-pencil-square"></i></a>
-                                <a href="delete_ics.php?id=${item.id}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this item?')"><i class="bi bi-trash"></i></a>`
-                            }
-                            if($role =='Staff'){
-                                `<a href="update_ics.php?id=${item.id}" class="btn btn-primary btn-sm"><i class="bi bi-pencil-square"></i></a>
-                                <a href="delete_ics.php?id=${item.id}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this item?')"><i class="bi bi-trash"></i></a>`
-                            }
-                                
-                            `</td>
-
-                            $('#view-par-details').html(detailsHTML);
+                            <td>${actionButtons}</td>  
                         </tr>
                     `;
                 }).join('');
